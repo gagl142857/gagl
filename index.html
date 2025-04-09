@@ -1027,11 +1027,20 @@
             const 입력아이디 = document.getElementById("아이디입력").value.trim();
             if (!입력아이디) return alert("아이디를 입력해주세요.");
 
-            유저데이터.아이디 = 입력아이디;
+            // 1️⃣ 아이디 중복 여부 확인
             화면잠금();
-            db.ref("users/" + uid).set(유저데이터).then(() => {
-                전투화면보여주기(유저데이터);
-                화면해제();
+            db.ref("users").orderByChild("아이디").equalTo(입력아이디).once("value", (snapshot) => {
+                if (snapshot.exists()) {
+                    화면해제();
+                    return alert("이미 존재하는 아이디입니다. 다른 이름을 입력해주세요.");
+                }
+
+                // 2️⃣ 중복 아니면 저장 진행
+                유저데이터.아이디 = 입력아이디;
+                db.ref("users/" + uid).set(유저데이터).then(() => {
+                    전투화면보여주기(유저데이터);
+                    화면해제();
+                });
             });
         }
 
