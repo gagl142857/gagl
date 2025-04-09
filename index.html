@@ -361,6 +361,9 @@
         }
 
         /* 빨강 */
+        .내아이디강조 {
+            background-color: #1e1e1e;
+        }
 
 
         /* css추가 */
@@ -832,6 +835,9 @@
 
                     document.getElementById("악마이름").innerText = `${로마번호}. ${악마이름}`;
 
+                    if (유저.아이디 === 유저데이터.아이디) {
+                        줄.classList.add("내아이디강조");
+                    }
 
 
                     // 👑 SVG 아이콘 생성
