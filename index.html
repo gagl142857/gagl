@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <title>gagl</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            color: white;
+            display: flex;
+            /* justify-content: center; */
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            font-size: 14px;
+            /* position: fixed; */
+            /* 화면고정배치 스크롤해도 안움직임 */
+            /* justify-content: space-between; */
+            /* 양쪽정렬 */
+            font-weight: 500;
+        }
+
+        .밑줄 {
+            border-bottom: 0.2px solid #2e2e2e;
+            /* position: fixed; */
+            /* top: 0; */
+            width: 100%;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .가로정렬 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .세로정렬 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .양쪽정렬 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .사백픽셀 {
+            width: 400px;
+        }
+
+        .버튼 {
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .버튼:hover {
+            background-color: #333;
+            cursor: pointer;
+        }
+
+        .커서호버:hover {
+            cursor: pointer;
+        }
+
+        .사백픽셀테두리 {
+            margin-top: 15px;
+            width: 400px;
+            border: 0.2px solid #2e2e2e;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .기본테두리 {
+            margin-top: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 0.2px solid #2e2e2e;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .유저몬스터테두리 {
+            width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .에너지바 {
+            background-color: #eab308;
+            height: 5px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .유저테두리 {
+            border: 0.2px solid #2614c7;
+            border-radius: 10px;
+            padding: 15px;
+            /* width: 100%; */
+        }
+
+        .몬스터테두리 {
+            border: 0.2px solid #c71414;
+            border-radius: 10px;
+            padding: 15px;
+            /* width: 100%; */
+
+        }
+
+        .경험치골드숙련도 {
+            background-color: #121212;
+            height: 85px;
+            border-radius: 10px;
+            width: 100px;
+            padding: 15px;
+        }
+
+        .레벨 {
+            color: #00c851;
+        }
+
+        .총경험치 {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .획득경험치 {
+            color: #7a7a7a;
+            font-size: 10px;
+            font-weight: lighter;
+        }
+
+        .골드 {
+            color: #b0b0b0;
+        }
+
+        .총골드 {
+            color: #f5c400;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .획득골드 {
+            color: #00c851;
+            font-size: 10px;
+            font-weight: lighter;
+        }
+
+        .숙련도 {
+            color: #b0b0b0;
+        }
+
+        .총숙련도 {
+            color: #3b82f6;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .획득숙련도 {
+            color: #00c851;
+            font-size: 10px;
+            font-weight: lighter;
+        }
+
+        .콘솔로그창 {
+            color: #ffffff;
+            border-radius: 10px;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            font-weight: bold;
+        }
+
+        .로딩컨테이너 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: sans-serif;
+            font-size: 16px;
+        }
+
+        .로딩스피너 {
+            width: 50px;
+            height: 50px;
+            border: 6px solid #ccc;
+            border-top-color: #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #사냥로그박스 {
+            max-height: 220px;
+            /* 필요에 따라 조절 가능 */
+            overflow-y: hidden;
+            /* padding: 5px; */
+            /* font-family: monospace; */
+        }
+
+        #죽음메시지 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 400px;
+            position: fixed;
+            top: 33%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #b0b0b0;
+            padding: 15px;
+            border: 3px solid #2e2e2e;
+            border-radius: 12px;
+            /* font-size: 20px; */
+            /* font-weight: bold; */
+            z-index: 9999;
+            box-shadow: 0 0 20px rgba(234, 0, 255, 0.6);
+            animation: fadeOut 2s ease-in-out forwards;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* 자동으로 사라지게 하는 페이드 아웃 */
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            70% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        #획득로그 {
+            color: #00c851;
+        }
+
+        #레벨업표시 {
+            color: #00c851;
+        }
+
+        #현재층 {
+            background: linear-gradient(135deg, #330000, #660000, #990000);
+            border: 2px solid #ff3300;
+            box-shadow: 0 0 12px #ff0000, 0 0 24px #440000 inset;
+            animation: 마계불길 4s ease-in-out infinite;
+        }
+
+        @keyframes 마계불길 {
+
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(1.3);
+            }
+        }
+
+        .crown-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+
+        .금 {
+            stroke: gold;
+        }
+
+        .은 {
+            stroke: silver;
+        }
+
+        .동 {
+            stroke: #cd7f32;
+        }
+
+        #보유숙련도:hover {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #3b82f6;
+        }
+
+        .target-icon {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            margin-right: 4px;
+        }
+
+        .알파 {
+            stroke: #facc15;
+        }
+
+        /* 노랑 */
+        .베타 {
+            stroke: #fb923c;
+        }
+
+        /* 주황 */
+        .감마 {
+            stroke: #38bdf8;
+        }
+
+        /* 하늘 */
+        .델타 {
+            stroke: #a855f7;
+        }
+
+        /* 보라 */
+        .오메가 {
+            stroke: #ef4444;
+        }
+
+        /* 빨강 */
+
+
+        /* css추가 */
+    </style>
+</head>
+
+<body>
+
+    <!-- <div id="로딩화면" class="로딩컨테이너">
+        <div class="로딩스피너"></div>
+        <div style="margin-top: 10px;">로딩 중입니다...</div>
+    </div> -->
+
+
+
+    <div class="밑줄" id="상단바">
+        <div class="양쪽정렬 사백픽셀">
+            <div class="커서호버" id="타이틀을아이디로">
+                gagl
+            </div>
+            <div id="전투스킬설정버튼" style="display: none;">
+                <div class="가로정렬">
+                    <div class="버튼" id="전투">
+                        전투
+                    </div>
+                    <div class="버튼">
+                        장비
+                    </div>
+                    <div class="버튼" id="스킬">
+                        스킬
+                    </div>
+                    <div class="버튼" id="전당">
+                        전당
+                    </div>
+                    <div class="버튼" id="탈퇴">
+                        탈퇴
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="사백픽셀테두리 세로정렬" id="에너지박스" style="display: none;">
+        <div class="양쪽정렬">
+            <div style="color: #eab308;">
+                <!-- 루시드 zap 아이콘 SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-zap-icon lucide-zap">
+                    <path
+                        d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
+                </svg>
+            </div>
+            <div>
+                ♾️
+            </div>
+        </div>
+        <div class="에너지바">
+
+        </div>
+    </div>
+
+
+
+    <div id="로그인화면" style="display: none;">
+
+        <div class="사백픽셀테두리 세로정렬">
+            <input type="text" placeholder="아이디을 입력하세요" id="아이디입력" autocomplete="off" maxlength="8">
+            <button onclick="아이디설정()">확인</button>
+        </div>
+    </div>
+
+
+
+
+    <div id="전투화면" style="display: none;">
+        <div class="사백픽셀테두리 가로정렬" id="현재층">
+            1층
+        </div>
+
+        <div class="사백픽셀테두리 유저테두리 양쪽정렬">
+            <div id="유저아이디">
+                영자
+            </div>
+            <div class="세로정렬">
+                <div id="유저공격력">
+                    공격력 100
+                </div>
+                <div id="유저체력">
+                    체력 100
+                </div>
+            </div>
+
+        </div>
+        <div class="사백픽셀테두리 몬스터테두리 양쪽정렬">
+            <div id="악마이름">
+                몬스터
+            </div>
+            <div class="세로정렬">
+                <div id="악마체력">
+                    체력 100
+                </div>
+                <div id="악마방어력">
+                    방어력 10
+                </div>
+            </div>
+        </div>
+
+        <div class="사백픽셀테두리 가로정렬" id="전투버튼박스">
+            <div class="버튼" id="공격버튼">⚔️ 공격하기</div>
+            <div class="버튼" id="자동사냥버튼">⏱ 자동사냥</div>
+        </div>
+
+        <div id="사냥결과">
+            <div class="사백픽셀테두리 세로정렬">
+                <div class="가로정렬">
+                    <div class="경험치골드숙련도 세로정렬">
+                        <div class="레벨" id="레벨">
+                            레벨 129
+                        </div>
+                        <div class="총경험치" id="총경험치">
+                            12,932
+                        </div>
+                        <div class="획득경험치" id="획득경험치">
+                            45
+                        </div>
+                    </div>
+                    <div class="경험치골드숙련도 세로정렬">
+                        <div class="골드" id="골드">
+                            골드
+                        </div>
+                        <div class="총골드" id="총골드">
+                            999,999
+                        </div>
+                        <div class="획득골드" id="획득골드">
+                            999
+                        </div>
+
+                    </div>
+                    <div class="경험치골드숙련도 세로정렬">
+                        <div class="숙련도" id="숙련도">
+                            숙련도
+                        </div>
+                        <div class="총숙련도" id="총숙련도">
+                            999,999
+                        </div>
+                        <div class="획득숙련도" id="획득숙련도">
+                            999
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="가로정렬" id="획득로그">
+                </div>
+
+                <div class="가로정렬" id="레벨업표시">
+
+                </div>
+            </div>
+        </div>
+
+        <div id="사냥로그박스"></div>
+    </div>
+
+    <div id="전당화면" style="display: none;">
+        <div id="전당컨테이너" class="사백픽셀테두리 세로정렬">
+        </div>
+    </div>
+
+    <div class="콘솔로그창" id="콘솔로그창">
+        콘솔로그창
+    </div>
+
+    <div id="죽음메시지" style="display: none;"></div>
+
+    <div id="블로커" style="
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 9999;
+  display: none;
+  cursor: wait;
+"></div>
+
+    <div id="스킬화면" style="display: none;">
+        <div class="밑줄" id="보유숙련도">
+
+        </div>
+
+        <div class="사백픽셀테두리" id="스킬컨테이너">
+        </div>
+    </div>
+
+
+    <!-- 객체추가 -->
+
+
+    <script>
+        // 콘솔 로그 출력용
+        const 원래로그 = console.log;
+        console.log = function (...args) {
+            원래로그(...args); // 기존 콘솔에 출력
+            const 콘솔로그창 = document.getElementById("콘솔로그창");
+            콘솔로그창.innerText = args.map(arg =>
+                typeof arg === "object" ? JSON.stringify(arg) : arg
+            ).join(" ");
+            콘솔로그창.style.display = "block";
+        };
+
+        // 에러 메시지 출력용
+        window.onerror = function (message, source, lineno, colno, error) {
+            const 콘솔로그창 = document.getElementById("콘솔로그창");
+            콘솔로그창.innerText = `${message} (${lineno}:${colno})`;
+            콘솔로그창.style.display = "block";
+            return true;
+        };
+
+
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyATQ8ecSPS6StHUEv_-b-bw59qtjXoUzHc",
+            authDomain: "gagl-eb32b.firebaseapp.com",
+            projectId: "gagl-eb32b",
+            storageBucket: "gagl-eb32b.firebasestorage.app",
+            messagingSenderId: "689475246615",
+            appId: "1:689475246615:web:9b5c0d7650e9580e34da52",
+            measurementId: "G-2G82FVDY46",
+            databaseURL: "https://gagl-eb32b-default-rtdb.firebaseio.com"  // 이 줄 추가
+        };
+
+
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+
+
+        let uid = "";
+        let 유저데이터 = {};
+        let 현재악마 = null;
+
+        let 현재악마체력 = 0;
+        let 현재악마최대체력 = 0;
+        let 자동사냥중 = false;
+        let 자동사냥타이머 = null;
+
+        const 스킬목록 = [
+            {
+                키: "알파크리티컬확률",
+                이름: "알파 크리티컬 확률",
+                설명: "알파 치명타 확률을 증가시킵니다.",
+                최대레벨: 10,
+                숙련도소모: 10,
+                잠금해제조건: null
+            },
+            {
+                키: "베타크리티컬확률",
+                이름: "베타 크리티컬 확률",
+                설명: "베타 치명타 확률을 증가시킵니다.",
+                최대레벨: 10,
+                숙련도소모: 20,
+                잠금해제조건: { 키: "알파크리티컬확률", 최소레벨: 10 }
+            },
+            {
+                키: "감마크리티컬확률",
+                이름: "감마 크리티컬 확률",
+                설명: "감마 치명타 확률을 증가시킵니다.",
+                최대레벨: 10,
+                숙련도소모: 30,
+                잠금해제조건: { 키: "베타크리티컬확률", 최소레벨: 10 }
+            },
+            {
+                키: "델타크리티컬확률",
+                이름: "델타 크리티컬 확률",
+                설명: "델타 치명타 확률을 증가시킵니다.",
+                최대레벨: 10,
+                숙련도소모: 50,
+                잠금해제조건: { 키: "감마크리티컬확률", 최소레벨: 10 }
+            },
+            {
+                키: "오메가크리티컬확률",
+                이름: "오메가 크리티컬 확률",
+                설명: "오메가 치명타 확률을 증가시킵니다.",
+                최대레벨: 10,
+                숙련도소모: 80,
+                잠금해제조건: { 키: "델타크리티컬확률", 최소레벨: 10 }
+            }
+        ];
+
+
+
+        auth.onAuthStateChanged(function (user) {
+            if (user) {
+                uid = user.uid;
+
+                // document.getElementById("로딩화면").style.display = "block";
+                // UID 기준으로 DB 조회
+                화면잠금();
+                db.ref("users/" + uid).once("value").then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const 데이터 = snapshot.val();
+
+                        if (데이터.아이디 && 데이터.아이디.trim() !== "") {
+                            유저데이터 = 데이터;
+                            // ⬇️ 여기!
+                            if (!유저데이터.스킬) {
+                                유저데이터.스킬 = {};
+                            }
+                            for (const 스킬 of 스킬목록) {
+                                if (!(스킬.키 in 유저데이터.스킬)) {
+                                    유저데이터.스킬[스킬.키] = 0;
+                                }
+                            }
+
+                            전투화면보여주기(유저데이터);
+                            화면해제();
+                        } else {
+                            // ❌ 아이디 없음 → 로그인화면 진입
+                            유저데이터 = 데이터;
+                            로그인화면보여주기();
+                            화면해제();
+                        }
+                    } else {
+                        // ✅ 완전 신규 유저 → 기본 데이터 생성 및 저장
+                        유저데이터 = {
+                            아이디: "",
+                            생성시각: new Date().toISOString(),
+                            레벨: 1,
+                            공격력: 100,
+                            체력: 100,
+                            경험치: 0,
+                            골드: 0,
+                            숙련도: 0,
+                            현재층: 1,
+                            현재악마번호: 1,
+                            스킬: {} // 일단 빈 객체로 넣고 바로 아래에서 채움
+                        };
+
+                        for (const 스킬 of 스킬목록) {
+                            유저데이터.스킬[스킬.키] = 0;
+                        }
+
+                        db.ref("users/" + uid).set(유저데이터).then(() => {
+                            로그인화면보여주기(); // 아이디 없으므로 로그인화면부터
+                            화면해제();
+                        });
+                    }
+                });
+
+            } else {
+                // 아직 로그인되지 않았으면 → 익명 로그인 시작
+                auth.signInAnonymously();
+            }
+        });
+
+        function 화면잠금() {
+            document.getElementById("블로커").style.display = "block";
+        }
+
+        function 화면해제() {
+            document.getElementById("블로커").style.display = "none";
+        }
+
+        function 로그인화면보여주기() {
+            // document.getElementById("로딩화면").style.display = "none";
+            document.getElementById("전투스킬설정버튼").style.display = "none";
+            document.getElementById("에너지박스").style.display = "none";
+            document.getElementById("전투화면").style.display = "none";
+            document.getElementById("로그인화면").style.display = "block";
+            document.getElementById("사냥로그박스").innerHTML = "";
+            document.getElementById("획득로그").innerText = "";
+            document.getElementById("레벨업표시").innerText = "";
+        }
+
+        function 전투화면보여주기(유저) {
+
+            document.getElementById("로그인화면").style.display = "none";
+            document.getElementById("전당화면").style.display = "none";
+            document.getElementById("스킬화면").style.display = "none";
+            document.getElementById("전투스킬설정버튼").style.display = "block";
+            document.getElementById("에너지박스").style.display = "block";
+            document.getElementById("전투화면").style.display = "block";
+
+            document.getElementById("유저아이디").innerText = 유저데이터.아이디 || "gagl";
+            document.getElementById("타이틀을아이디로").innerText = 유저데이터.아이디 || "gagl";
+            document.getElementById("유저공격력").innerText = "공격력 " + 유저데이터.공격력 || "gagl";
+            document.getElementById("유저체력").innerText = "체력 " + 유저데이터.체력 + " / 100" || "gagl";
+            document.getElementById("현재층").innerText = 유저데이터.현재층 + "층" || "gagl";
+
+            document.getElementById("레벨").innerText = "레벨 " + (유저데이터.레벨 ?? 1);
+            document.getElementById("총경험치").innerText =
+                typeof 유저데이터.경험치 === "number" ? 유저데이터.경험치.toLocaleString() : "0";
+            document.getElementById("획득경험치").innerText = "0";
+
+            document.getElementById("총골드").innerText =
+                typeof 유저데이터.골드 === "number" ? 유저데이터.골드.toLocaleString() : "0";
+            document.getElementById("획득골드").innerText = "0";
+
+            document.getElementById("총숙련도").innerText =
+                typeof 유저데이터.숙련도 === "number" ? 유저데이터.숙련도.toLocaleString() : "0";
+            document.getElementById("획득숙련도").innerText = "0";
+
+            // ✅ 몬스터 정보 표시
+            const 악마 = 현재악마불러오기(유저데이터.현재층, 유저데이터.현재악마번호);
+            const 악마이름 = 악마리스트[(유저데이터.현재악마번호 - 1) % 악마리스트.length];
+
+            const 로마번호 = 숫자를로마숫자로(유저데이터.현재악마번호);
+            document.getElementById("악마이름").innerText = `${로마번호}. ${악마이름}`;
+
+            현재악마 = 현재악마불러오기(유저데이터.현재층, 유저데이터.현재악마번호);
+            현재악마체력 = 현재악마.체력;
+            현재악마최대체력 = 현재악마.체력;
+
+            document.getElementById("악마체력").innerText = `체력 ${현재악마체력} / ${현재악마최대체력}`;
+            document.getElementById("악마방어력").innerText = `방어력 ${악마.방어력}`;
+
+            document.getElementById("사냥로그박스").innerHTML = "";
+            document.getElementById("획득로그").innerText = "";
+            // document.getElementById("레벨업표시").innerText = "";
+        }
+
+        function 전당화면보여주기() {
+            document.getElementById("전투화면").style.display = "none";
+            document.getElementById("에너지박스").style.display = "none";
+            document.getElementById("전당화면").style.display = "block";
+            document.getElementById("스킬화면").style.display = "none";
+            document.getElementById("사냥로그박스").innerHTML = "";
+            document.getElementById("획득로그").innerText = "";
+            document.getElementById("레벨업표시").innerText = "";
+
+            // 🔁 랭킹 초기화
+            const 컨테이너 = document.getElementById("전당컨테이너");
+            컨테이너.innerHTML = "";
+
+            // 🔍 Firebase에서 모든 유저 조회
+            db.ref("users").once("value").then((snapshot) => {
+                const 유저리스트 = [];
+
+
+                snapshot.forEach((child) => {
+                    const 데이터 = child.val();
+                    if (!데이터.아이디 || 데이터.아이디.trim() === "") return; // ✅ 랭킹 제외
+
+                    유저리스트.push(데이터);
+                });
+
+                // 📊 정렬: 층수 → 몬스터번호 기준 내림차순
+                유저리스트.sort((a, b) => {
+                    if (b.현재층 !== a.현재층) {
+                        return b.현재층 - a.현재층;
+                    }
+                    return b.현재악마번호 - a.현재악마번호;
+                });
+
+                // 🏆 상위 10명만 출력
+                유저리스트.slice(0, 10).forEach((유저, index) => {
+                    const 줄 = document.createElement("div");
+                    줄.className = "양쪽정렬 밑줄";
+                    // 줄.className = "양쪽정렬 사백픽셀테두리";
+
+                    const 로마번호 = 숫자를로마숫자로(유저.현재악마번호);
+                    const 악마이름 = 악마리스트[(유저.현재악마번호 - 1) % 악마리스트.length];
+
+                    document.getElementById("악마이름").innerText = `${로마번호}. ${악마이름}`;
+
+
+
+                    // 👑 SVG 아이콘 생성
+                    let 왕관색클래스 = "";
+                    if (index === 0) 왕관색클래스 = "금";
+                    else if (index === 1) 왕관색클래스 = "은";
+                    else if (index === 2) 왕관색클래스 = "동";
+
+                    const 왕관 = index < 3
+                        ? `<svg xmlns="http://www.w3.org/2000/svg" class="crown-icon ${왕관색클래스}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           <path d="M2 5l4.5 4.5L12 3l5.5 6.5L22 5l-1 14H3L2 5z" />
+           <path d="M5 20h14" />
+         </svg>`
+                        : ``;
+
+                    줄.innerHTML = `
+        <div class="가로정렬">${왕관} ${index + 1}</div>
+        <div>${유저.아이디 || "익명"} - ${유저.현재층}층 ${로마번호}. ${악마이름}</div>
+    `;
+
+                    컨테이너.appendChild(줄);
+                });
+            });
+        }
+
+
+
+        function 스킬화면보여주기() {
+            document.getElementById("전투화면").style.display = "none";
+            document.getElementById("에너지박스").style.display = "none";
+            document.getElementById("전당화면").style.display = "none";
+            document.getElementById("스킬화면").style.display = "block";
+            document.getElementById("사냥로그박스").innerHTML = "";
+            document.getElementById("획득로그").innerText = "";
+            document.getElementById("레벨업표시").innerText = "";
+            document.getElementById("보유숙련도").innerText = "보유 숙련도 " + 유저데이터.숙련도;
+
+            const 클래스맵 = {
+                "알파크리티컬확률": "알파",
+                "베타크리티컬확률": "베타",
+                "감마크리티컬확률": "감마",
+                "델타크리티컬확률": "델타",
+                "오메가크리티컬확률": "오메가"
+            };
+
+
+            const 컨테이너 = document.getElementById("스킬컨테이너");
+            컨테이너.innerHTML = "";
+
+            // 스킬 초기화 (기존 유저용)
+            if (!유저데이터.스킬) {
+                유저데이터.스킬 = {};
+            }
+            for (const 스킬 of 스킬목록) {
+                if (!(스킬.키 in 유저데이터.스킬)) {
+                    유저데이터.스킬[스킬.키] = 0;
+                }
+            }
+
+            // 렌더링
+            스킬목록.forEach(스킬 => {
+                const 조건 = 스킬.잠금해제조건;
+                const 잠김 = 조건 && (유저데이터.스킬?.[조건.키] ?? 0) < 조건.최소레벨;
+
+                if (잠김) return; // 잠김 스킬은 아예 표시 안 함 (원하면 흐리게 처리도 가능)
+
+                const 레벨 = 유저데이터.스킬[스킬.키];
+                const 확률 = 레벨 * 10;
+
+                const 클래스명 = 클래스맵[스킬.키] ?? "";
+                const 아이콘HTML = `
+<svg xmlns="http://www.w3.org/2000/svg" class="target-icon ${클래스명}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+  <circle cx="12" cy="12" r="10" />
+  <circle cx="12" cy="12" r="6" />
+  <circle cx="12" cy="12" r="2" />
+</svg>`;
+
+                const 박스 = document.createElement("div");
+                박스.className = "기본테두리 세로정렬";
+
+                박스.innerHTML = `
+  <div class="양쪽정렬">
+    <div class="가로정렬">${아이콘HTML}${스킬.이름}</div>
+    <div>${레벨} / ${스킬.최대레벨}</div>
+  </div>
+  <div class="양쪽정렬">
+    <div style="font-size: 11px; font-weight: lighter;">
+      ${스킬.설명} (${확률}% / 🔧 ${스킬.숙련도소모}숙련도)
+    </div>
+    <div>
+      <button onclick="스킬투자('${스킬.키}')">+</button>
+      <button onclick="스킬회수('${스킬.키}')">-</button>
+    </div>
+  </div>
+`;
+
+                컨테이너.appendChild(박스);
+            });
+        }
+
+        function 스킬투자(스킬키) {
+            const 스킬 = 스킬목록.find(s => s.키 === 스킬키);
+            if (!스킬) return alert("존재하지 않는 스킬입니다.");
+
+            const 소모량 = 스킬.숙련도소모 ?? 100;
+            const 레벨 = 유저데이터.스킬[스킬키];
+
+            if (레벨 >= 스킬.최대레벨) return alert("최대 레벨입니다.");
+            if (유저데이터.숙련도 < 소모량) return alert(`숙련도가 부족합니다. (${소모량} 필요)`);
+
+            유저데이터.숙련도 -= 소모량;
+            유저데이터.스킬[스킬키] += 1;
+
+            화면잠금();
+            db.ref("users/" + uid).set(유저데이터).then(() => {
+                스킬화면보여주기();
+                화면해제();
+            });
+        }
+
+        function 스킬회수(스킬키) {
+            const 스킬 = 스킬목록.find(s => s.키 === 스킬키);
+            if (!스킬) return alert("존재하지 않는 스킬입니다.");
+
+            const 회수량 = 스킬.숙련도소모 ?? 100;
+            const 레벨 = 유저데이터.스킬[스킬키];
+            if (레벨 <= 0) return alert("회수할 수 없습니다.");
+
+            유저데이터.숙련도 += 회수량;
+            유저데이터.스킬[스킬키] -= 1;
+
+            화면잠금();
+            db.ref("users/" + uid).set(유저데이터).then(() => {
+                스킬화면보여주기();
+                화면해제();
+            });
+        }
+
+        function 적용된크리티컬배율() {
+            const 크리티컬스킬들 = [
+                { 키: "알파크리티컬확률", 이름: "알파 크리티컬", 클래스: "알파", 배율: 1.3 },
+                { 키: "베타크리티컬확률", 이름: "베타 크리티컬", 클래스: "베타", 배율: 1.5 },
+                { 키: "감마크리티컬확률", 이름: "감마 크리티컬", 클래스: "감마", 배율: 1.7 },
+                { 키: "델타크리티컬확률", 이름: "델타 크리티컬", 클래스: "델타", 배율: 2.0 },
+                { 키: "오메가크리티컬확률", 이름: "오메가 크리티컬", 클래스: "오메가", 배율: 2.5 }
+            ];
+
+            let 누적배율 = 1.0;
+            let 발동된스킬 = null;
+
+            for (const 스킬 of 크리티컬스킬들) {
+                const 레벨 = 유저데이터.스킬?.[스킬.키] ?? 0;
+                const 확률 = 레벨 * 10;
+                const 발동 = 확률 >= 100 || Math.random() * 100 < 확률;
+
+                if (발동) {
+                    누적배율 *= 스킬.배율;
+                    발동된스킬 = 스킬; // 가장 마지막에 발동된 = 가장 높은 스킬
+                }
+            }
+
+            return {
+                배율: 누적배율,
+                스킬이름: 발동된스킬?.이름 ?? null,
+                클래스: 발동된스킬?.클래스 ?? null
+            };
+        }
+
+
+        document.getElementById("보유숙련도").addEventListener("click", () => {
+            if (!confirm("모든 스킬 포인트를 회수하시겠습니까?")) return;
+
+            for (const 스킬 of 스킬목록) {
+                const 키 = 스킬.키;
+                const 레벨 = 유저데이터.스킬[키] ?? 0;
+                const 회수량 = 스킬.숙련도소모 ?? 10;
+                유저데이터.숙련도 += 회수량 * 레벨;
+                유저데이터.스킬[키] = 0;
+            }
+
+
+            화면잠금();
+            db.ref("users/" + uid).set(유저데이터).then(() => {
+                alert("스킬 포인트가 모두 회수되었습니다.");
+                스킬화면보여주기();
+                화면해제();
+            });
+        });
+
+
+
+        function 아이디설정() {
+            const 입력아이디 = document.getElementById("아이디입력").value.trim();
+            if (!입력아이디) return alert("아이디를 입력해주세요.");
+
+            유저데이터.아이디 = 입력아이디;
+            화면잠금();
+            db.ref("users/" + uid).set(유저데이터).then(() => {
+                전투화면보여주기(유저데이터);
+                화면해제();
+            });
+        }
+
+        document.getElementById("타이틀을아이디로").addEventListener("click", () => {
+            const el = document.getElementById("타이틀을아이디로");
+
+            // 이미 인풋 상태면 중복 생성 방지
+            if (el.querySelector("input")) return;
+
+            const 현재아이디 = 유저데이터.아이디 || "";
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = 현재아이디;
+            input.maxLength = 8;
+            input.style.width = "120px";
+            input.style.fontSize = "inherit";
+
+            // 기존 텍스트 제거하고 input 삽입
+            el.innerHTML = "";
+            el.appendChild(input);
+            input.focus();
+
+            // 엔터로 저장
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    const 새아이디 = input.value.trim();
+                    if (!새아이디) return alert("아이디를 입력해주세요.");
+                    화면잠금();
+                    유저데이터.아이디 = 새아이디;
+                    db.ref("users/" + uid).set(유저데이터).then(() => {
+                        el.innerText = 새아이디;
+                        document.getElementById("타이틀을아이디로").innerText = 새아이디;
+                        document.getElementById("유저아이디").innerText = 새아이디;
+                        화면해제();
+                    });
+                }
+
+                // Esc 누르면 취소
+                if (e.key === "Escape") {
+                    el.innerText = 현재아이디;
+                }
+            });
+
+            // 포커스 벗어나도 원래대로 (선택사항)
+            input.addEventListener("blur", () => {
+                el.innerText = 현재아이디;
+            });
+        });
+
+
+        const 악마리스트 = [
+            "바알", "아가레스", "바르바토스", "파임", "말파스", "푸르손", "마라바스", "아몬", "부네", "포르네우스",
+            "카임", "부에르", "구시온", "시트리", "베레트", "레리어", "엘리고스", "제파르", "보트스", "마르코시아스",
+            "스틸", "다이몬", "페니악스", "하프리", "살로스", "프루푸스", "아이몬", "나베리우스", "글라시아라볼라스", "보락스",
+            "포르카스", "아스모데우스", "가프", "푸르카스", "부알", "피닉스", "하우레스", "말포르스", "라하브", "사브낙",
+            "샤크", "샤르나크", "알로세스", "카이미", "무루무르", "오로버스", "세이르", "디카리브", "벨리알", "데카브리아",
+            "아미", "오세", "오로이아스", "바피메트", "안드로말리우스", "아몬", "바티바스", "아라타바", "라에스", "에이몬",
+            "니베로스", "안드라멜리우스", "자간", "로노베", "발라크", "버알베리스", "세레우스", "시에르", "벨", "루페스",
+            "크로셀", "도레알", "에리곤", "디나르"
+        ];
+
+        function 숫자를로마숫자로(num) {
+            const 로마 = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"];
+            const 값 = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+            let 결과 = "";
+            for (let i = 0; i < 값.length; i++) {
+                while (num >= 값[i]) {
+                    결과 += 로마[i];
+                    num -= 값[i];
+                }
+            }
+            return 결과;
+        }
+
+
+        function 현재악마불러오기(층, 번호) {
+            const 악마수 = 72;
+            const 체력기본 = 500;
+            const 체력증가 = 200;
+
+            const 방어기본 = 5;
+            const 방어증가 = 2;
+            const 방어증가주기 = 3;
+
+            const 층배율 = 1.3;
+
+            let 층시작체력 = 체력기본;
+            let 층시작방어 = 방어기본;
+
+            for (let i = 1; i < 층; i++) {
+                const 마지막체력 = 층시작체력 + (악마수 - 1) * 체력증가;
+                const 마지막방어 = 층시작방어 + Math.floor((악마수 - 1) / 방어증가주기) * 방어증가;
+
+                층시작체력 = Math.round(마지막체력 * 층배율);
+                층시작방어 = Math.round(마지막방어 * 층배율);
+            }
+
+            const 체력 = Math.round(층시작체력 + (번호 - 1) * 체력증가);
+            const 방어력 = Math.floor(층시작방어 + Math.floor((번호 - 1) / 방어증가주기) * 방어증가);
+
+            return {
+                층,
+                번호,
+                체력,
+                방어력
+            };
+        }
+
+        document.getElementById("탈퇴").addEventListener("click", function () {
+            if (!uid) return alert("로그인이 되어 있지 않습니다.");
+
+
+            if (confirm("정말 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.")) {
+                // 🔥 해당 uid 전체 데이터 완전 삭제
+                화면잠금();
+                db.ref("users/" + uid).remove().then(() => {
+                    alert("모든 데이터가 초기화되었습니다. 새로고침하면 로그인 화면이 나옵니다.");
+                    location.reload(); // 새로고침해서 다시 익명 로그인부터
+                    화면해제();
+                });
+            }
+
+
+        });
+
+
+        function 공격하기() {
+            // 💥 이미 체력이 0이면 공격하지 않도록 차단
+            if (현재악마체력 <= 0) return;
+
+            const 층 = 유저데이터.현재층;
+            const 번호 = 유저데이터.현재악마번호;
+            const 악마 = 현재악마불러오기(층, 번호);  // ❗ 매번 새로 생성 (문제 원인)
+            const 악마이름 = 악마리스트[(번호 - 1) % 악마리스트.length];
+
+            const 유저공격력 = 유저데이터.공격력;
+            const 실제데미지 = Math.max(0, 유저공격력 - 악마.방어력);
+            const 랜덤비율 = Math.random() * 0.2 + 0.8;
+
+            const { 배율, 스킬이름, 클래스 } = 적용된크리티컬배율();
+            let 최종데미지 = Math.floor(실제데미지 * 랜덤비율 * 배율);
+
+            const 로그박스 = document.getElementById("사냥로그박스");
+
+            let 로그내용 = "";
+            if (스킬이름 && 클래스) {
+                const 아이콘HTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" class="target-icon ${클래스}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="6" />
+    <circle cx="12" cy="12" r="2" />
+  </svg>`;
+                로그내용 = `${악마이름}에게 ${아이콘HTML}${스킬이름} 발동! ${최종데미지}의 데미지`;
+            } else {
+                로그내용 = `${악마이름}에게 ${최종데미지}의 데미지`;
+            }
+
+            const 줄 = document.createElement("div");
+            줄.innerHTML = 로그내용;
+            줄.className = "사백픽셀테두리 가로정렬";
+
+            if (로그박스.style.display !== "block") {
+                로그박스.style.display = "block";
+            }
+            if (로그박스.children.length >= 3) {
+                로그박스.removeChild(로그박스.lastChild);
+            }
+            로그박스.insertBefore(줄, 로그박스.firstChild);
+
+            // ❗ 체력 줄이기
+            현재악마체력 = Math.max(0, 현재악마체력 - 최종데미지);
+            document.getElementById("악마체력").innerText = `체력 ${현재악마체력} / ${현재악마최대체력}`;
+
+            // 💔 유저 체력 1 감소
+            유저데이터.체력 = Math.max(0, 유저데이터.체력 - 1);
+            const 체력UI = document.getElementById("유저체력");
+            if (체력UI) {
+                체력UI.innerText = `체력 ${유저데이터.체력} / 100`;
+            }
+
+            // 💀 유저 사망 처리
+            if (유저데이터.체력 <= 0) {
+                유저데이터.체력 = 100;
+
+                let 이전번호 = 유저데이터.현재악마번호 - 1;
+                let 이전층 = 유저데이터.현재층;
+
+                if (이전번호 < 1) {
+                    이전층 -= 1;
+                    이전번호 = 72;
+                    if (이전층 < 1) 이전층 = 1;
+                }
+
+                유저데이터.현재층 = 이전층;
+                유저데이터.현재악마번호 = 이전번호;
+
+                화면잠금();
+                db.ref("users/" + uid).set(유저데이터).then(() => {
+                    document.getElementById("사냥로그박스").innerHTML = "";
+                    전투화면보여주기();
+                    죽음메시지보여주기("💀 체력이 모두 소진되어 후퇴합니다!");
+                    화면해제();
+                });
+                return;
+            }
+
+            // ✅ 몬스터 처치
+            if (현재악마체력 <= 0) {
+                const 보상 = 보상획득(층);
+                const 이전레벨 = 유저데이터.레벨;
+
+                유저데이터.경험치 += 보상.경험치;
+                유저데이터.골드 += 보상.골드;
+                유저데이터.숙련도 += 보상.숙련도;
+
+                const 새레벨 = Math.floor(유저데이터.경험치 / 100) + 1;
+                document.getElementById("레벨업표시").innerText = "";
+
+                if (새레벨 > 이전레벨) {
+                    const 증가량 = 새레벨 - 이전레벨;
+                    유저데이터.레벨 = 새레벨;
+                    유저데이터.공격력 += 증가량 * 10;
+                    document.getElementById("레벨업표시").innerText = "레벨업!";
+                }
+
+                // 다음 몬스터로 이동
+                let 다음번호 = 유저데이터.현재악마번호 + 1;
+                let 다음층 = 유저데이터.현재층;
+                if (다음번호 > 72) {
+                    다음번호 = 1;
+                    다음층 += 1;
+                }
+                유저데이터.현재악마번호 = 다음번호;
+                유저데이터.현재층 = 다음층;
+
+                화면잠금();
+                db.ref("users/" + uid).set(유저데이터).then(() => {
+                    document.getElementById("사냥로그박스").innerHTML = "";
+                    전투화면보여주기();
+                    document.getElementById("획득로그").innerText =
+                        `${보상.경험치} EXP, ${보상.골드} Gold, ${보상.숙련도} 숙련도 획득`;
+
+                    document.getElementById("레벨").innerText = `레벨 ${유저데이터.레벨}`;
+                    document.getElementById("유저공격력").innerText = `공격력 ${유저데이터.공격력}`;
+
+                    document.getElementById("획득경험치").innerText = "+" + 보상.경험치.toLocaleString();
+                    document.getElementById("획득골드").innerText = "+" + 보상.골드.toLocaleString();
+                    document.getElementById("획득숙련도").innerText = "+" + 보상.숙련도.toLocaleString();
+
+                    document.getElementById("총경험치").innerText = 유저데이터.경험치.toLocaleString();
+                    document.getElementById("총골드").innerText = 유저데이터.골드.toLocaleString();
+                    document.getElementById("총숙련도").innerText = 유저데이터.숙련도.toLocaleString();
+
+                    const 로마번호 = 숫자를로마숫자로(유저데이터.현재악마번호 - 1);
+                    죽음메시지보여주기(`${로마번호}. ${악마이름}을 처치했습니다!`);
+                    화면해제();
+                });
+            }
+        }
+
+        function 보상획득(층) {
+            const 경험치 = Math.floor(Math.random() * 10) + 층 * 10; // 1층: 10~19
+            const 골드 = Math.floor(Math.random() * 100) + 층 * 100;      // 100~199
+            const 숙련도 = 층;                                       // 층수 = 숙련도
+
+
+            return { 경험치, 골드, 숙련도 };
+        }
+
+
+        window.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("공격버튼").addEventListener("click", 공격하기);
+        });
+
+
+        function 죽음메시지보여주기(text) {
+            const box = document.getElementById("죽음메시지");
+            box.style.display = "block";
+            box.style.opacity = "1"; // 재등장 대비
+            box.innerText = text;
+
+            // 애니메이션 다시 적용 (리셋)
+            box.style.animation = "none";
+            void box.offsetWidth; // reflow
+            box.style.animation = "fadeOut 2s ease-in-out forwards";
+        }
+
+        function 자동사냥토글() {
+            const 버튼 = document.getElementById("자동사냥버튼");
+
+            if (!자동사냥중) {
+                자동사냥중 = true;
+                버튼.innerText = "🛑 자동중지";
+                버튼.style.color = "red";
+
+                자동사냥타이머 = setInterval(() => {
+                    공격하기(); // 👉 여긴 이미 블로커 체크가 있으니 OK
+                }, 100); // 간격은 원하면 300~500ms로 변경 가능
+            } else {
+                자동사냥중 = false;
+                clearInterval(자동사냥타이머);
+                자동사냥타이머 = null;
+
+                버튼.innerText = "⏱ 자동사냥";
+                버튼.style.color = "white";
+            }
+        }
+
+        document.getElementById("자동사냥버튼").addEventListener("click", 자동사냥토글);
+
+        document.getElementById("전당").addEventListener("click", () => {
+            전당화면보여주기();
+        });
+
+        document.getElementById("스킬").addEventListener("click", () => {
+            스킬화면보여주기();
+        });
+
+        document.getElementById("전투").addEventListener("click", () => {
+            전투화면보여주기(유저데이터);
+        });
+
+        document.addEventListener("click", (e) => {
+            // 자동사냥 중일 때만 멈춤
+            if (자동사냥중 && !e.target.closest("#자동사냥버튼")) {
+                자동사냥중 = false;
+                clearInterval(자동사냥타이머);
+                자동사냥타이머 = null;
+
+                const 버튼 = document.getElementById("자동사냥버튼");
+                버튼.innerText = "⏱ 자동사냥";
+                버튼.style.color = "white";
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+        // 스크립트추가
+
+
+
+
+
+    </script>
+
+
+
+
+
+
+
+</body>
+
+</html>
