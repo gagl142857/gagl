@@ -1308,7 +1308,8 @@
         }
 
         function 보상획득(층) {
-            const 경험치 = Math.floor(Math.random() * 10) + 층 * 10; // 1층: 10~19
+            const 경험치 = Math.floor(Math.random() * 10); // 1층: 10~19
+            // const 경험치 = Math.floor(Math.random() * 10) + 층 * 10; // 1층: 10~19
             const 골드 = Math.floor(Math.random() * 100) + 층 * 100;      // 100~199
             const 숙련도 = 층;                                       // 층수 = 숙련도
 
