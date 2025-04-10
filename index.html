@@ -227,13 +227,11 @@
             }
         }
 
+        /* 
         #사냥로그박스 {
             max-height: 220px;
-            /* 필요에 따라 조절 가능 */
             overflow-y: hidden;
-            /* padding: 5px; */
-            /* font-family: monospace; */
-        }
+        } */
 
         #죽음메시지 {
             display: flex;
@@ -254,7 +252,7 @@
             /* font-size: 20px; */
             /* font-weight: bold; */
             z-index: 9999;
-            box-shadow: 0 0 20px rgba(234, 0, 255, 0.6);
+            box-shadow: 0 0 20px #2e2e2e;
             animation: fadeOut 2s ease-in-out forwards;
             user-select: none;
             pointer-events: none;
@@ -274,6 +272,13 @@
                 opacity: 0;
                 display: none;
             }
+        }
+
+
+
+        #승리패배로그 {
+            font-size: 16px;
+            margin-top: 10px;
         }
 
         #획득로그 {
@@ -336,152 +341,78 @@
             margin-right: 4px;
         }
 
-        .알파 {
-            stroke: #facc15;
-        }
-
-        /* 노랑 */
-        .베타 {
-            stroke: #fb923c;
-        }
-
-        /* 주황 */
-        .감마 {
-            stroke: #38bdf8;
-        }
-
-        /* 하늘 */
-        .델타 {
-            stroke: #a855f7;
-        }
-
-        /* 보라 */
+        /* 크리티컬 - 빨강 */
+        .알파,
+        .베타,
+        .감마,
+        .델타,
+        .엡실론,
+        .제타,
+        .에타,
+        .쎄타,
+        .이오타,
+        .카파,
+        .람다,
+        .뮤,
+        .뉴,
+        .크시,
+        .오미크론,
+        .파이,
+        .로,
+        .시그마,
+        .타우,
+        .입실론,
+        .파이2,
+        .카이,
+        .프시,
         .오메가 {
             stroke: #ef4444;
         }
 
-        .엡실론 {
-            stroke: #eab308;
-        }
-
-        .제타 {
-            stroke: #f59e0b;
-        }
-
-        .에타 {
+        /* 드레인 - 주황 */
+        .킬로,
+        .메가,
+        .기가,
+        .테라,
+        .페타,
+        .엑사,
+        .제타,
+        .요타,
+        .로나,
+        .쿼카 {
             stroke: #f97316;
         }
 
-        .쎄타 {
-            stroke: #fb7185;
-        }
-
-        .이오타 {
-            stroke: #f472b6;
-        }
-
-        .카파 {
-            stroke: #c084fc;
-        }
-
-        .람다 {
-            stroke: #a78bfa;
-        }
-
-        .뮤 {
-            stroke: #60a5fa;
-        }
-
-        .뉴 {
-            stroke: #38bdf8;
-        }
-
-        .크시 {
-            stroke: #22d3ee;
-        }
-
-        .오미크론 {
-            stroke: #2dd4bf;
-        }
-
-        .파이 {
-            stroke: #4ade80;
-        }
-
-        .로 {
-            stroke: #34d399;
-        }
-
-        .시그마 {
-            stroke: #6ee7b7;
-        }
-
-        .타우 {
-            stroke: #fde68a;
-        }
-
-        .입실론 {
+        /* 버서커 - 노랑 */
+        .앵거,
+        .레이지,
+        .프렌지,
+        .매드니스,
+        .하울,
+        .새비지,
+        .블러드,
+        .카오스,
+        .데스,
+        .루나틱 {
             stroke: #facc15;
         }
 
-        .파이2 {
-            stroke: #fcd34d;
+        .레어10 {
+            border: 2px solid #ffd700;
+            /* 금색 */
+            box-shadow: 0 0 12px #ffd700, 0 0 24px #ffecb3 inset;
         }
 
-        .카이 {
-            stroke: #fbbf24;
+        .레어3 {
+            border: 2px solid #4ff787;
+            /* 푸른색 */
+            box-shadow: 0 0 12px #6bf74f, 0 0 24px #e0f7fa inset;
         }
 
-        .프시 {
-            stroke: #f87171;
-        }
-
-        /* 오메가는 이미 있음 */
-
-        /* 빨강 */
-        .내아이디강조 {
-            background-color: #1e1e1e;
-        }
-
-        .킬로 {
-            stroke: #f87171;
-        }
-
-        /* 연한 붉은색 */
-        .메가 {
-            stroke: #fb7185;
-        }
-
-        .기가 {
-            stroke: #f43f5e;
-        }
-
-        .테라 {
-            stroke: #e11d48;
-        }
-
-        .페타 {
-            stroke: #be123c;
-        }
-
-        .엑사 {
-            stroke: #9f1239;
-        }
-
-        .제타 {
-            stroke: #881337;
-        }
-
-        .요타 {
-            stroke: #7f1d1d;
-        }
-
-        .로나 {
-            stroke: #6b0f1a;
-        }
-
-        .쿼카 {
-            stroke: #581c1c;
+        .레어1 {
+            border: 2px solid #9c27b0;
+            /* 보라색 */
+            box-shadow: 0 0 12px #ce93d8, 0 0 24px #f3e5f5 inset;
         }
 
         /* css추가 */
@@ -494,6 +425,13 @@
         <div class="로딩스피너"></div>
         <div style="margin-top: 10px;">로딩 중입니다...</div>
     </div> -->
+    <!-- body 최상단 어디든 가능 -->
+    <div id="고정이펙트영역" style="
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+"></div>
 
 
 
@@ -565,39 +503,6 @@
             1층
         </div>
 
-        <div class="사백픽셀테두리 유저테두리 양쪽정렬">
-            <div id="유저아이디">
-                영자
-            </div>
-            <div class="세로정렬">
-                <div id="유저공격력">
-                    공격력 100
-                </div>
-                <div id="유저체력">
-                    체력 100
-                </div>
-            </div>
-
-        </div>
-        <div class="사백픽셀테두리 몬스터테두리 양쪽정렬">
-            <div id="악마이름">
-                몬스터
-            </div>
-            <div class="세로정렬">
-                <div id="악마체력">
-                    체력 100
-                </div>
-                <div id="악마방어력">
-                    방어력 10
-                </div>
-            </div>
-        </div>
-
-        <div class="사백픽셀테두리 가로정렬" id="전투버튼박스">
-            <div class="버튼" id="공격버튼">⚔️ 공격하기</div>
-            <div class="버튼" id="자동사냥버튼">⏱ 자동사냥</div>
-        </div>
-
         <div id="사냥결과">
             <div class="사백픽셀테두리 세로정렬">
                 <div class="가로정렬">
@@ -638,6 +543,8 @@
                     </div>
                 </div>
 
+                <div class="가로정렬" id="승리패배로그">
+                </div>
                 <div class="가로정렬" id="획득로그">
                 </div>
 
@@ -647,7 +554,42 @@
             </div>
         </div>
 
-        <div id="사냥로그박스"></div>
+        <div class="사백픽셀테두리 가로정렬" id="전투버튼박스">
+            <div class="버튼" id="공격버튼">⚔️ 공격하기</div>
+            <div class="버튼" id="자동사냥버튼">⏱ 자동사냥</div>
+        </div>
+
+
+
+        <div class="사백픽셀테두리 유저테두리 양쪽정렬">
+            <div id="유저아이디">
+                영자
+            </div>
+            <div class="세로정렬">
+                <div id="유저공격력">
+                    공격력 100
+                </div>
+                <div id="유저체력">
+                    체력 100
+                </div>
+            </div>
+
+        </div>
+        <div class="사백픽셀테두리 몬스터테두리 양쪽정렬">
+            <div id="악마이름">
+                몬스터
+            </div>
+            <div class="세로정렬">
+                <div id="악마체력">
+                    체력 100
+                </div>
+                <div id="악마방어력">
+                    방어력 10
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
     <div id="전당화면" style="display: none;">
@@ -669,6 +611,11 @@
   display: none;
   cursor: wait;
 "></div>
+
+    <div id="장비화면" style="display: none;">
+        <div class="사백픽셀테두리" id="장비컨테이너">
+        </div>
+    </div>
 
     <div id="스킬화면" style="display: none;">
         <div class="밑줄" id="보유숙련도">
@@ -734,6 +681,17 @@
         let 자동사냥중 = false;
         let 자동사냥타이머 = null;
 
+
+        const 레어몬스터목록 = [
+            "CCCXIII. 바포메트",
+            "IV. 디아블로",
+            "CMXCIX. 메피스토",
+            "CXXXI. 릴리트",
+            "LXXXIX. 레비아탄",
+            "DCCLXXVII. 벨제붑",
+            "DCLXVI. 사탄"
+        ];
+
         const 크리티컬이름들 = [
             "알파", "베타", "감마", "델타", "엡실론", "제타", "에타", "쎄타", "이오타", "카파",
             "람다", "뮤", "뉴", "크시", "오미크론", "파이", "로", "시그마", "타우", "입실론",
@@ -741,10 +699,11 @@
         ];
 
         const 크리티컬스킬목록 = 크리티컬이름들.map((이름, 인덱스) => {
+            const 배율 = (1.1 + 인덱스 * 0.1).toFixed(1); // ✅ 올바른 변수 이름
             return {
                 키: `${이름.toLowerCase()}크리티컬확률`,
                 이름: `${이름} 크리티컬 확률`,
-                설명: `${이름} 치명타 확률을 증가시킵니다.`,
+                설명: `최종데미지 ${배율}배 증가.`,
                 최대레벨: 10,
                 숙련도소모: 10 + 인덱스 * 5,
                 잠금해제조건: 인덱스 === 0 ? null : {
@@ -763,7 +722,7 @@
             return {
                 키: `${이름.toLowerCase()}드레인흡혈확률`,
                 이름: `${이름} 드레인`,
-                설명: `몬스터 처치 시 일정 확률로 체력을 회복.`,
+                설명: `몬스터 처치 시 체력 +${인덱스 + 1} 회복.`,
                 최대레벨: 10,
                 숙련도소모: 10 + 인덱스 * 5,
                 잠금해제조건: 인덱스 === 0 ? null : {
@@ -773,10 +732,35 @@
             };
         });
 
+        const 버서커이름들 = [
+            "앵거", "레이지", "프렌지", "매드니스", "하울",
+            "새비지", "블러드", "카오스", "데스", "루나틱"
+        ];
+
+        const 버서커배율목록 = [1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4, 3.7, 4.0];
+
+        const 버서커스킬목록 = 버서커이름들.map((이름, 인덱스) => {
+            const 배율 = 버서커배율목록[인덱스].toFixed(1); // ✅ 올바른 변수명
+            return {
+                키: `${이름.toLowerCase()}버서커데미지증가확률`,
+                이름: `${이름} 버서커`,
+                설명: `체력 30% 이하 시 데미지 ${배율}배 증가.`,
+                최대레벨: 10,
+                숙련도소모: 10 + 인덱스 * 5,
+                잠금해제조건: 인덱스 === 0 ? null : {
+                    키: `${버서커이름들[인덱스 - 1].toLowerCase()}버서커데미지증가확률`,
+                    최소레벨: 10
+                }
+            };
+        });
+
         const 스킬목록 = [
             ...크리티컬스킬목록,
-            ...드레인스킬목록
+            ...드레인스킬목록,
+            ...버서커스킬목록
         ];
+
+
 
         auth.onAuthStateChanged(function (user) {
             if (user) {
@@ -791,10 +775,17 @@
 
                         if (데이터.아이디 && 데이터.아이디.trim() !== "") {
                             유저데이터 = 데이터;
+
+                            // ✅ 최대체력 기본값 설정
+                            if (!유저데이터.최대체력) {
+                                유저데이터.최대체력 = 100;
+                            }
+
                             // ⬇️ 여기!
                             if (!유저데이터.스킬) {
                                 유저데이터.스킬 = {};
                             }
+
                             for (const 스킬 of 스킬목록) {
                                 if (!(스킬.키 in 유저데이터.스킬)) {
                                     유저데이터.스킬[스킬.키] = 0;
@@ -816,7 +807,8 @@
                             생성시각: new Date().toISOString(),
                             레벨: 1,
                             공격력: 100,
-                            체력: 100,
+                            남은체력: 100,
+                            최대체력: 100,
                             경험치: 0,
                             골드: 0,
                             숙련도: 0,
@@ -856,7 +848,7 @@
             document.getElementById("에너지박스").style.display = "none";
             document.getElementById("전투화면").style.display = "none";
             document.getElementById("로그인화면").style.display = "block";
-            document.getElementById("사냥로그박스").innerHTML = "";
+            // document.getElementById("사냥로그박스").innerHTML = "";
             document.getElementById("획득로그").innerText = "";
             document.getElementById("레벨업표시").innerText = "";
         }
@@ -872,8 +864,9 @@
 
             document.getElementById("유저아이디").innerText = 유저데이터.아이디 || "gagl";
             document.getElementById("타이틀을아이디로").innerText = 유저데이터.아이디 || "gagl";
-            document.getElementById("유저공격력").innerText = "공격력 " + 유저데이터.공격력 || "gagl";
-            document.getElementById("유저체력").innerText = "체력 " + 유저데이터.체력 + " / 100" || "gagl";
+            document.getElementById("유저공격력").innerText = "공격력 " + (유저데이터.공격력 || 0);
+
+            document.getElementById("유저체력").innerText = `체력 ${유저데이터.남은체력} / ${유저데이터.최대체력}`;
             document.getElementById("현재층").innerText = 유저데이터.현재층 + "층" || "gagl";
 
             document.getElementById("레벨").innerText = "레벨 " + (유저데이터.레벨 ?? 1);
@@ -903,9 +896,11 @@
             document.getElementById("악마체력").innerText = `체력 ${현재악마체력} / ${현재악마최대체력}`;
             document.getElementById("악마방어력").innerText = `방어력 ${악마.방어력}`;
 
-            document.getElementById("사냥로그박스").innerHTML = "";
+            // document.getElementById("사냥로그박스").innerHTML = "";
             document.getElementById("획득로그").innerText = "";
             // document.getElementById("레벨업표시").innerText = "";
+            // 전투화면 진입 직후 호출
+            setTimeout(고정이펙트영역초기화, 0);
         }
 
         function 전당화면보여주기() {
@@ -913,7 +908,7 @@
             document.getElementById("에너지박스").style.display = "none";
             document.getElementById("전당화면").style.display = "block";
             document.getElementById("스킬화면").style.display = "none";
-            document.getElementById("사냥로그박스").innerHTML = "";
+            // document.getElementById("사냥로그박스").innerHTML = "";
             document.getElementById("획득로그").innerText = "";
             document.getElementById("레벨업표시").innerText = "";
 
@@ -1006,14 +1001,14 @@
             document.getElementById("에너지박스").style.display = "none";
             document.getElementById("전당화면").style.display = "none";
             document.getElementById("스킬화면").style.display = "block";
-            document.getElementById("사냥로그박스").innerHTML = "";
+            // document.getElementById("사냥로그박스").innerHTML = "";
             document.getElementById("획득로그").innerText = "";
             document.getElementById("레벨업표시").innerText = "";
             document.getElementById("보유숙련도").innerText = "보유 숙련도 " + 유저데이터.숙련도;
 
             const 클래스맵 = {};
-            [...크리티컬스킬목록, ...드레인스킬목록].forEach(스킬 => {
-                const 매칭 = 스킬.키.replace(/크리티컬확률|드레인흡혈확률/, '');
+            [...크리티컬스킬목록, ...드레인스킬목록, ...버서커스킬목록].forEach(스킬 => {
+                const 매칭 = 스킬.키.replace(/크리티컬확률|드레인흡혈확률|버서커데미지증가확률/, '');
                 클래스맵[스킬.키] = 매칭;
             });
 
@@ -1034,46 +1029,52 @@
             스킬목록.forEach(스킬 => {
                 const 조건 = 스킬.잠금해제조건;
                 const 잠김 = 조건 && (유저데이터.스킬?.[조건.키] ?? 0) < 조건.최소레벨;
-
-                if (잠김) return; // 잠김 스킬은 아예 표시 안 함 (원하면 흐리게 처리도 가능)
+                if (잠김) return;
 
                 const 레벨 = 유저데이터.스킬[스킬.키];
                 const 확률 = 레벨 * 10;
 
-                const 클래스명 = 클래스맵[스킬.키] ?? "";  // ✅ 이 줄을 먼저!
-                const 아이콘HTML = 스킬.키.includes("드레인")
-                    ? `<svg xmlns="http://www.w3.org/2000/svg" class="drain-icon ${클래스명}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m18 2 4 4" />
-      <path d="m17 7 3-3" />
-      <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" />
-      <path d="m9 11 4 4" />
-      <path d="m5 19-3 3" />
-      <path d="m14 4 6 6" />
-    </svg>`
-                    : `<svg xmlns="http://www.w3.org/2000/svg" class="target-icon ${클래스명}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" />
-    </svg>`;
+                const 클래스명 = 클래스맵[스킬.키] ?? "";
+
+                const 아이콘HTML = 스킬.키.includes("버서커")
+                    ? `<svg xmlns="http://www.w3.org/2000/svg" class="flame-icon ${클래스명}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6
+             .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294
+             1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+           </svg>`
+                    : 스킬.키.includes("드레인")
+                        ? `<svg xmlns="http://www.w3.org/2000/svg" class="drain-icon ${클래스명}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <path d="m18 2 4 4" />
+             <path d="m17 7 3-3" />
+             <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" />
+             <path d="m9 11 4 4" />
+             <path d="m5 19-3 3" />
+             <path d="m14 4 6 6" />
+           </svg>`
+                        : `<svg xmlns="http://www.w3.org/2000/svg" class="target-icon ${클래스명}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+             <circle cx="12" cy="12" r="10" />
+             <circle cx="12" cy="12" r="6" />
+             <circle cx="12" cy="12" r="2" />
+           </svg>`;
 
                 const 박스 = document.createElement("div");
                 박스.className = "기본테두리 세로정렬";
 
                 박스.innerHTML = `
-  <div class="양쪽정렬">
-    <div class="가로정렬">${아이콘HTML}${스킬.이름}</div>
-    <div>${레벨} / ${스킬.최대레벨}</div>
-  </div>
-  <div class="양쪽정렬">
-    <div style="font-size: 11px; font-weight: lighter;">
-      ${스킬.설명} (${확률}% / 🔧 ${스킬.숙련도소모}숙련도)
-    </div>
-    <div>
-      <button onclick="스킬투자('${스킬.키}')">+</button>
-      <button onclick="스킬회수('${스킬.키}')">-</button>
-    </div>
-  </div>
-`;
+      <div class="양쪽정렬">
+        <div class="가로정렬">${아이콘HTML}${스킬.이름}</div>
+        <div>${레벨} / ${스킬.최대레벨}</div>
+      </div>
+      <div class="양쪽정렬">
+        <div style="font-size: 11px; font-weight: lighter;">
+          ${스킬.설명} (${확률}% / 🔧 ${스킬.숙련도소모}숙련도)
+        </div>
+        <div>
+          <button onclick="스킬투자('${스킬.키}')">+</button>
+          <button onclick="스킬회수('${스킬.키}')">-</button>
+        </div>
+      </div>
+    `;
 
                 컨테이너.appendChild(박스);
             });
@@ -1125,25 +1126,27 @@
             ];
 
             let 누적배율 = 1.0;
-            let 발동된스킬 = null;
+            let 마지막발동 = null;
 
             for (let i = 0; i < 그리스이름들.length; i++) {
                 const 이름 = 그리스이름들[i];
                 const 키 = `${이름.toLowerCase()}크리티컬확률`;
                 const 레벨 = 유저데이터.스킬?.[키] ?? 0;
                 const 확률 = 레벨 * 10;
-                const 발동 = 확률 >= 100 || Math.random() * 100 < 확률;
 
+                const 발동 = 확률 >= 100 || Math.random() * 100 < 확률;
                 if (발동) {
-                    누적배율 *= 1.2 + i * 0.1;
-                    발동된스킬 = { 이름: `${이름} 크리티컬`, 클래스: 이름.toLowerCase() };
+                    누적배율 *= (1.1 + i * 0.1);
+                    마지막발동 = { 이름: `${이름} 크리티컬`, 클래스: 이름.toLowerCase() };
+                } else {
+                    break; // 선행 스킬 미발동 시 이후는 건너뜀
                 }
             }
 
             return {
                 배율: 누적배율,
-                스킬이름: 발동된스킬?.이름 ?? null,
-                클래스: 발동된스킬?.클래스 ?? null
+                스킬이름: 마지막발동?.이름 ?? null,
+                클래스: 마지막발동?.클래스 ?? null
             };
         }
 
@@ -1181,59 +1184,93 @@
             };
         }
 
+        function 버서커데미지배율() {
+            const 이름들 = [
+                "앵거", "레이지", "프렌지", "매드니스", "하울",
+                "새비지", "블러드", "카오스", "데스", "루나틱"
+            ];
+
+            // 각 스킬별 배율
+            const 배율목록 = [1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4, 3.7, 4.0];
+
+            const 체력비율 = 유저데이터.남은체력 / 유저데이터.최대체력;
+            if (체력비율 > 0.3) return 1.0;
+
+            let 누적배율 = 1.0;
+
+            for (let i = 0; i < 이름들.length; i++) {
+                const 이름 = 이름들[i];
+                const 키 = `${이름.toLowerCase()}버서커데미지증가확률`;
+                const 레벨 = 유저데이터.스킬?.[키] ?? 0;
+                const 확률 = 레벨 * 10;
+
+                const 발동 = 확률 >= 100 || Math.random() * 100 < 확률;
+                if (발동) {
+                    누적배율 *= 배율목록[i];
+                } else {
+                    break; // 연속 발동 실패 시 중단
+                }
+            }
+
+            return 누적배율;
+        }
 
         function 흡혈로그보여주기(발동스킬, 회복량) {
+            const 대상 = document.querySelector(".유저테두리");
+            if (!대상) return;
+
+            const rect = 대상.getBoundingClientRect();
+
             const 아이콘HTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" class="drain-icon ${발동스킬?.toLowerCase()}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m18 2 4 4" />
-        <path d="m17 7 3-3" />
-        <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" />
-        <path d="m9 11 4 4" />
-        <path d="m5 19-3 3" />
-        <path d="m14 4 6 6" />
-      </svg>
-    `;
+    <svg xmlns="http://www.w3.org/2000/svg" class="drain-icon ${발동스킬?.toLowerCase()}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m18 2 4 4" />
+      <path d="m17 7 3-3" />
+      <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" />
+      <path d="m9 11 4 4" />
+      <path d="m5 19-3 3" />
+      <path d="m14 4 6 6" />
+    </svg>
+  `;
 
-            const 로그 = document.createElement("div");
-            로그.innerHTML = `${아이콘HTML} ${발동스킬} 드레인! 체력 +${회복량}`;
-            로그.style.position = "absolute";
-            로그.style.top = "0";
-            로그.style.left = "50%";
-            로그.style.transform = "translate(-50%, -100%)";
-            로그.style.zIndex = "999";
-            로그.style.color = "#f43f5e";
-            로그.style.fontWeight = "bold";
-            로그.style.fontSize = "13px";
-            로그.style.display = "flex";
-            로그.style.alignItems = "center";
-            로그.style.gap = "5px";
-            로그.style.justifyContent = "center";
-            로그.style.padding = "4px 8px";
-            로그.style.background = "rgba(0, 0, 0, 0.7)";
-            로그.style.borderRadius = "6px";
-            로그.style.pointerEvents = "none";
-            로그.style.animation = "fadeOut 2s ease-in-out forwards";
+            const el = document.createElement("div");
+            el.innerHTML = `${아이콘HTML} ${발동스킬} 드레인! 체력 +${회복량}`;
+            el.style.position = "absolute";
+            el.style.left = `${rect.left + Math.random() * rect.width}px`;
+            el.style.top = `${rect.top + Math.random() * rect.height}px`;
+            el.style.color = "#f43f5e";
+            el.style.fontWeight = "bold";
+            el.style.fontSize = "13px";
+            el.style.display = "inline-flex";
+            el.style.alignItems = "center";
+            el.style.gap = "5px";
+            el.style.padding = "4px 8px";
+            el.style.background = "rgba(0, 0, 0, 0.7)";
+            el.style.borderRadius = "6px";
+            el.style.pointerEvents = "none";
+            el.style.whiteSpace = "nowrap";
+            el.style.zIndex = "9999";
+            el.style.animation = "fadeOut 2s ease-in-out forwards";
 
-            const style = document.createElement("style");
-            style.textContent = `
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            60% { opacity: 1; transform: translate(-50%, -110%); }
-            100% { opacity: 0; transform: translate(-50%, -130%); }
-        }
-    `;
-            document.head.appendChild(style);
-
-            const 체력엘 = document.getElementById("유저체력");
-            체력엘.style.position = "relative";  // 부모 기준
-            체력엘.appendChild(로그);
-
-            setTimeout(() => {
-                로그.remove();
-                style.remove();
-            }, 2000);
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 2000);
         }
 
+        function 고정이펙트영역초기화() {
+            const 유저 = document.querySelector(".유저테두리");
+            const 몬스터 = document.querySelector(".몬스터테두리");
+            const 박스 = document.getElementById("고정이펙트영역");
+
+            if (!유저 || !몬스터 || !박스) return;
+
+            const u = 유저.getBoundingClientRect();
+            const m = 몬스터.getBoundingClientRect();
+
+            박스.style.top = `${u.top}px`;
+            박스.style.left = `${u.left}px`;
+            박스.style.width = `${u.width}px`;
+            박스.style.height = `${m.bottom - u.top}px`;
+            박스.style.display = "block";
+        }
 
 
         document.getElementById("보유숙련도").addEventListener("click", () => {
@@ -1341,14 +1378,14 @@
 
 
         const 악마리스트 = [
-            "바알", "아가레스", "바르바토스", "파임", "말파스", "푸르손", "마라바스", "아몬", "부네", "포르네우스",
-            "카임", "부에르", "구시온", "시트리", "베레트", "레리어", "엘리고스", "제파르", "보트스", "마르코시아스",
-            "스틸", "다이몬", "페니악스", "하프리", "살로스", "프루푸스", "아이몬", "나베리우스", "글라시아라볼라스", "보락스",
-            "포르카스", "아스모데우스", "가프", "푸르카스", "부알", "피닉스", "하우레스", "말포르스", "라하브", "사브낙",
-            "샤크", "샤르나크", "알로세스", "카이미", "무루무르", "오로버스", "세이르", "디카리브", "벨리알", "데카브리아",
-            "아미", "오세", "오로이아스", "바피메트", "안드로말리우스", "아몬", "바티바스", "아라타바", "라에스", "에이몬",
-            "니베로스", "안드라멜리우스", "자간", "로노베", "발라크", "버알베리스", "세레우스", "시에르", "벨", "루페스",
-            "크로셀", "도레알", "에리곤", "디나르"
+            "디나르", "에리곤", "도레알", "크로셀", "루페스", "벨", "시에르", "세레우스", "버알베리스", "발라크",
+            "로노베", "자간", "안드라멜리우스", "니베로스", "에이몬", "라에스", "아라타바", "바티바스", "아몬", "안드로말리우스",
+            "바피메트", "오로이아스", "오세", "아미", "데카브리아", "벨리알", "디카리브", "세이르", "오로버스", "무루무르",
+            "카이미", "알로세스", "샤르나크", "샤크", "사브낙", "라하브", "말포르스", "하우레스", "피닉스", "부알",
+            "푸르카스", "가프", "아스모데우스", "포르카스", "보락스", "글라시아라볼라스", "나베리우스", "아이몬", "프루푸스", "살로스",
+            "하프리", "페니악스", "다이몬", "스틸", "마르코시아스", "보트스", "제파르", "엘리고스", "레리어", "베레트",
+            "시트리", "구시온", "부에르", "카임", "포르네우스", "부네", "아몬", "마라바스", "푸르손", "말파스",
+            "파임", "바르바토스", "아가레스", "바알"
         ];
 
         function 숫자를로마숫자로(num) {
@@ -1366,35 +1403,57 @@
 
 
         function 현재악마불러오기(층, 번호) {
+            const 레어몬스터확률표 = [
+                { 이름: "CCCXIII. 바포메트", 확률: 0.10, 배율: 1.1 },
+                { 이름: "IV. 디아블로", 확률: 0.10, 배율: 1.1 },
+                { 이름: "CMXCIX. 메피스토", 확률: 0.10, 배율: 1.1 },
+                { 이름: "CXXXI. 릴리트", 확률: 0.10, 배율: 1.1 },
+                { 이름: "LXXXIX. 레비아탄", 확률: 0.03, 배율: 1.3 },
+                { 이름: "DCCLXXVII. 벨제붑", 확률: 0.03, 배율: 1.3 },
+                { 이름: "DCLXVI. 사탄", 확률: 0.01, 배율: 1.5 }
+            ];
+
+            // 🎯 기본 몬스터 스탯 계산
             const 악마수 = 72;
-            const 체력기본 = 500;
-            const 체력증가 = 200;
-
+            const 체력기본 = 200;
+            const 체력증가 = 20;
             const 방어기본 = 10;
-            const 방어증가 = 3;
-            const 방어증가주기 = 4;
-
-            const 층배율 = 1.3;
+            const 방어증가 = 1;
+            const 방어증가주기 = 1;
+            const 층배율 = 1.2;
 
             let 층시작체력 = 체력기본;
             let 층시작방어 = 방어기본;
-
             for (let i = 1; i < 층; i++) {
                 const 마지막체력 = 층시작체력 + (악마수 - 1) * 체력증가;
                 const 마지막방어 = 층시작방어 + Math.floor((악마수 - 1) / 방어증가주기) * 방어증가;
-
                 층시작체력 = Math.round(마지막체력 * 층배율);
                 층시작방어 = Math.round(마지막방어 * 층배율);
             }
 
-            const 체력 = Math.round(층시작체력 + (번호 - 1) * 체력증가);
-            const 방어력 = Math.floor(층시작방어 + Math.floor((번호 - 1) / 방어증가주기) * 방어증가);
+            const 기본체력 = Math.round(층시작체력 + (번호 - 1) * 체력증가);
+            const 기본방어력 = Math.floor(층시작방어 + Math.floor((번호 - 1) / 방어증가주기) * 방어증가);
+
+            // 🧿 레어몬스터 확률 체크
+            for (const 레어 of 레어몬스터확률표) {
+                if (Math.random() < 레어.확률) {
+                    return {
+                        층,
+                        번호,
+                        이름: 레어.이름,
+                        체력: Math.round(기본체력 * 레어.배율),
+                        방어력: Math.round(기본방어력 * 레어.배율),
+                        레어: true
+                    };
+                }
+            }
 
             return {
                 층,
                 번호,
-                체력,
-                방어력
+                체력: 기본체력,
+                방어력: 기본방어력,
+                레어: false
             };
         }
 
@@ -1417,155 +1476,140 @@
 
 
         function 공격하기() {
-            // 💥 이미 체력이 0이면 공격하지 않도록 차단
-            if (현재악마체력 <= 0) return;
+            if (현재악마체력 <= 0 || 유저데이터.남은체력 <= 0) return;
 
-            const 층 = 유저데이터.현재층;
-            const 번호 = 유저데이터.현재악마번호;
-            const 악마 = 현재악마불러오기(층, 번호);  // ❗ 매번 새로 생성 (문제 원인)
-            const 악마이름 = 악마리스트[(번호 - 1) % 악마리스트.length];
+            화면잠금();
 
-            const 유저공격력 = 유저데이터.공격력;
-            const 실제데미지 = Math.max(0, 유저공격력 - 악마.방어력);
-            const 랜덤비율 = Math.random() * 0.2 + 0.8;
+            // ✅ 몬스터 이름 일관성 있게 추출
+            const 악마 = 현재악마불러오기(유저데이터.현재층, 유저데이터.현재악마번호);
+            const 악마이름 = 악마리스트[(유저데이터.현재악마번호 - 1) % 악마리스트.length];
+            const 로마번호 = 숫자를로마숫자로(유저데이터.현재악마번호);
+            const 몬스터이름 = `${로마번호}. ${악마이름}`;
 
-            const { 배율, 스킬이름, 클래스 } = 적용된크리티컬배율();
-            let 최종데미지 = Math.floor(실제데미지 * 랜덤비율 * 배율);
+            let 악마HP = 악마.체력;
+            let 유저HP = 유저데이터.남은체력;
+            let 전투결과 = null;
 
-            const 로그박스 = document.getElementById("사냥로그박스");
+            while (악마HP > 0 && 유저HP > 0) {
+                const 유저공 = 유저데이터.공격력;
+                const 방어 = 악마.방어력;
+                const 랜덤 = Math.random() * 0.2 + 0.8;
+                const { 배율 } = 적용된크리티컬배율();
+                const { 배율: 크리배율 } = 적용된크리티컬배율();
+                const 버서커배율 = 버서커데미지배율();
 
-            let 로그내용 = "";
-            if (스킬이름 && 클래스) {
-                const 아이콘HTML = `
-  <svg xmlns="http://www.w3.org/2000/svg" class="target-icon ${클래스}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="12" r="6" />
-    <circle cx="12" cy="12" r="2" />
-  </svg>`;
-                로그내용 = `${악마이름}에게 ${아이콘HTML}${스킬이름} 발동! ${최종데미지}의 데미지`;
-            } else {
-                로그내용 = `${악마이름}에게 ${최종데미지}의 데미지`;
+                const 데미지 = Math.floor(Math.max(0, 유저공 - 방어) * 랜덤 * 크리배율 * 버서커배율);
+
+                악마HP -= 데미지;
+                유저HP = Math.max(0, 유저HP - 1);
             }
 
-            const 줄 = document.createElement("div");
-            줄.innerHTML = 로그내용;
-            줄.className = "사백픽셀테두리 가로정렬";
+            전투결과 = (유저HP <= 0) ? "패배" : "승리";
 
-            if (로그박스.style.display !== "block") {
-                로그박스.style.display = "block";
-            }
-            if (로그박스.children.length >= 3) {
-                로그박스.removeChild(로그박스.lastChild);
-            }
-            로그박스.insertBefore(줄, 로그박스.firstChild);
+            setTimeout(() => {
+                if (전투결과 === "패배") {
+                    // ✅ 후퇴 처리
+                    유저데이터.남은체력 = 유저데이터.최대체력;
+                    let 이전번호 = 유저데이터.현재악마번호 - 1;
+                    let 이전층 = 유저데이터.현재층;
+                    if (이전번호 < 1) {
+                        이전층 -= 1;
+                        이전번호 = 72;
+                        if (이전층 < 1) {
+                            이전층 = 1;
+                            이전번호 = 1; // ✅ 1층 1번 유지
+                        }
+                    }
+                    유저데이터.현재층 = 이전층;
+                    유저데이터.현재악마번호 = 이전번호;
 
-            // ❗ 체력 줄이기
-            현재악마체력 = Math.max(0, 현재악마체력 - 최종데미지);
-            document.getElementById("악마체력").innerText = `체력 ${현재악마체력} / ${현재악마최대체력}`;
+                    db.ref("users/" + uid).set(유저데이터).then(() => {
+                        전투화면보여주기();
+                        document.getElementById("승리패배로그").innerText = "패배";
+                        document.getElementById("승리패배로그").style.color = "red";
+                        document.getElementById("획득로그").style.color = "red";
+                        document.getElementById("레벨업표시").innerText = "";
+                        document.getElementById("획득로그").innerText = "이 전 몬스터로 돌아갑니다";
+                        죽음메시지보여주기("💀 체력이 모두 소진되어 후퇴합니다!");
+                        화면해제();
+                    });
 
-            // 💔 유저 체력 1 감소
-            유저데이터.체력 = Math.max(0, 유저데이터.체력 - 1);
-            const 체력UI = document.getElementById("유저체력");
-            if (체력UI) {
-                체력UI.innerText = `체력 ${유저데이터.체력} / 100`;
-            }
+                } else {
+                    const { 회복량, 발동스킬 } = 드레인회복계산();
+                    유저HP = Math.min(유저데이터.최대체력, 유저HP + 회복량);
 
-            // 💀 유저 사망 처리
-            if (유저데이터.체력 <= 0) {
-                유저데이터.체력 = 100;
+                    const 보상 = 보상획득(유저데이터.현재층);
+                    const 이전레벨 = 유저데이터.레벨;
 
-                let 이전번호 = 유저데이터.현재악마번호 - 1;
-                let 이전층 = 유저데이터.현재층;
+                    유저데이터.남은체력 = 유저HP;
+                    유저데이터.경험치 += 보상.경험치;
+                    유저데이터.골드 += 보상.골드;
+                    유저데이터.숙련도 += 보상.숙련도;
 
-                if (이전번호 < 1) {
-                    이전층 -= 1;
-                    이전번호 = 72;
-                    if (이전층 < 1) 이전층 = 1;
-                }
-
-                유저데이터.현재층 = 이전층;
-                유저데이터.현재악마번호 = 이전번호;
-
-                화면잠금();
-                db.ref("users/" + uid).set(유저데이터).then(() => {
-                    document.getElementById("사냥로그박스").innerHTML = "";
-                    전투화면보여주기();
-                    죽음메시지보여주기("💀 체력이 모두 소진되어 후퇴합니다!");
-                    화면해제();
-                });
-                return;
-            }
-
-            // ✅ 몬스터 처치
-            if (현재악마체력 <= 0) {
-                const { 회복량, 발동스킬 } = 드레인회복계산();
-                if (회복량 > 0) {
-                    유저데이터.체력 = Math.min(100, 유저데이터.체력 + 회복량);
-                    if (체력UI) {
-                        체력UI.innerText = `체력 ${유저데이터.체력} / 100`;
+                    const 새레벨 = Math.floor(유저데이터.경험치 / 100) + 1;
+                    if (새레벨 > 이전레벨) {
+                        const 증가량 = 새레벨 - 이전레벨;
+                        유저데이터.레벨 = 새레벨;
+                        유저데이터.공격력 += 증가량 * 15;
+                        유저데이터.남은체력 = 유저데이터.최대체력;
                     }
 
-                    흡혈로그보여주기(발동스킬, 회복량);
+                    let 다음번호 = 유저데이터.현재악마번호 + 1;
+                    let 다음층 = 유저데이터.현재층;
+                    if (다음번호 > 72) {
+                        다음번호 = 1;
+                        다음층 += 1;
+                    }
+                    유저데이터.현재악마번호 = 다음번호;
+                    유저데이터.현재층 = 다음층;
+
+                    db.ref("users/" + uid).set(유저데이터).then(() => {
+                        전투화면보여주기();
+
+                        // ✅ 승리 UI 출력
+                        document.getElementById("승리패배로그").innerText = "승리";
+                        document.getElementById("승리패배로그").style.color = "#00c851";
+                        document.getElementById("획득로그").style.color = "#00c851";
+                        document.getElementById("획득로그").innerText =
+                            `${보상.경험치} EXP, ${보상.골드} Gold, ${보상.숙련도} 숙련도 획득`;
+                        document.getElementById("획득경험치").innerText = `+${보상.경험치}`;
+                        document.getElementById("획득골드").innerText = `+${보상.골드}`;
+                        document.getElementById("획득숙련도").innerText = `+${보상.숙련도}`;
+                        document.getElementById("레벨업표시").innerText =
+                            (새레벨 > 이전레벨) ? "레벨업!" : "";
+
+                        if (회복량 > 0) {
+                            흡혈로그보여주기(발동스킬, 회복량);
+                        }
+
+                        죽음메시지보여주기(`${몬스터이름} 처치!`);
+                        화면해제();
+                    });
                 }
+            }, 100);
+        }
 
-                const 보상 = 보상획득(층);
-                const 이전레벨 = 유저데이터.레벨;
+        function 데미지표시(텍스트) {
+            const el = document.createElement("div");
+            el.innerText = 텍스트;
 
-                유저데이터.경험치 += 보상.경험치;
-                유저데이터.골드 += 보상.골드;
-                유저데이터.숙련도 += 보상.숙련도;
+            el.style.position = "absolute";
+            el.style.left = `${Math.random() * 80 + 10}%`;  // 10% ~ 90%
+            el.style.top = `${Math.random() * 70 + 15}%`;   // 15% ~ 85%
+            el.style.color = "orange";
+            el.style.fontWeight = "bold";
+            el.style.fontSize = "16px";
+            el.style.pointerEvents = "none";
+            el.style.whiteSpace = "nowrap";
+            el.style.zIndex = "9999";
+            el.style.animation = "fadeOut 1.5s ease-out forwards";
 
-                const 새레벨 = Math.floor(유저데이터.경험치 / 100) + 1;
-                document.getElementById("레벨업표시").innerText = "";
-
-                if (새레벨 > 이전레벨) {
-                    const 증가량 = 새레벨 - 이전레벨;
-                    유저데이터.레벨 = 새레벨;
-                    // 레벨업 시 기존 +10 → +15
-                    유저데이터.공격력 += 증가량 * 15;
-                    document.getElementById("레벨업표시").innerText = "레벨업!";
-                }
-
-                // 다음 몬스터로 이동
-                let 다음번호 = 유저데이터.현재악마번호 + 1;
-                let 다음층 = 유저데이터.현재층;
-                if (다음번호 > 72) {
-                    다음번호 = 1;
-                    다음층 += 1;
-                }
-                유저데이터.현재악마번호 = 다음번호;
-                유저데이터.현재층 = 다음층;
-
-                화면잠금();
-                db.ref("users/" + uid).set(유저데이터).then(() => {
-                    document.getElementById("사냥로그박스").innerHTML = "";
-                    전투화면보여주기();
-                    document.getElementById("획득로그").innerText =
-                        `${보상.경험치} EXP, ${보상.골드} Gold, ${보상.숙련도} 숙련도 획득`;
-
-                    document.getElementById("레벨").innerText = `레벨 ${유저데이터.레벨}`;
-                    document.getElementById("유저공격력").innerText = `공격력 ${유저데이터.공격력}`;
-
-                    document.getElementById("획득경험치").innerText = "+" + 보상.경험치.toLocaleString();
-                    document.getElementById("획득골드").innerText = "+" + 보상.골드.toLocaleString();
-                    document.getElementById("획득숙련도").innerText = "+" + 보상.숙련도.toLocaleString();
-
-                    document.getElementById("총경험치").innerText = 유저데이터.경험치.toLocaleString();
-                    document.getElementById("총골드").innerText = 유저데이터.골드.toLocaleString();
-                    document.getElementById("총숙련도").innerText = 유저데이터.숙련도.toLocaleString();
-
-                    const 로마번호 = 숫자를로마숫자로(유저데이터.현재악마번호 - 1);
-                    죽음메시지보여주기(`${로마번호}. ${악마이름}을 처치했습니다!`);
-                    화면해제();
-                });
-
-            }
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1500);
         }
 
         function 보상획득(층) {
-            // 기존: 0~9
-            const 경험치 = Math.floor(Math.random() * 10) + 층 * 3;
-            // 예: 1층 = 5~14, 10층 = 50~59
+            const 경험치 = Math.floor(Math.random() * 25) + 10;
             // const 경험치 = Math.floor(Math.random() * 10) + 층 * 10; // 1층: 10~19
             const 골드 = Math.floor(Math.random() * 100) + 층 * 100;      // 100~199
             const 숙련도 = 층;                                       // 층수 = 숙련도
@@ -1581,15 +1625,31 @@
 
 
         function 죽음메시지보여주기(text) {
-            const box = document.getElementById("죽음메시지");
-            box.style.display = "block";
-            box.style.opacity = "1"; // 재등장 대비
-            box.innerText = text;
+            const 대상 = document.querySelector(".몬스터테두리");
+            if (!대상) return;
 
-            // 애니메이션 다시 적용 (리셋)
-            box.style.animation = "none";
-            void box.offsetWidth; // reflow
-            box.style.animation = "fadeOut 2s ease-in-out forwards";
+            const rect = 대상.getBoundingClientRect();
+
+            const el = document.createElement("div");
+            el.innerText = text;
+            el.style.position = "absolute";
+            el.style.left = `${rect.left + Math.random() * rect.width}px`;
+            el.style.top = `${rect.top + Math.random() * rect.height}px`;
+            el.style.color = "#b0b0b0";
+            el.style.background = "rgba(0, 0, 0, 0.8)";
+            el.style.padding = "10px 20px";
+            el.style.border = "2px solid #2e2e2e";
+            el.style.borderRadius = "12px";
+            el.style.fontWeight = "bold";
+            el.style.fontSize = "14px";
+            el.style.pointerEvents = "none";
+            el.style.zIndex = "9999";
+            el.style.whiteSpace = "nowrap";
+            el.style.animation = "fadeOut 2s ease-in-out forwards";
+            el.style.boxShadow = "0 0 20px rgba(234, 0, 255, 0.6)";
+
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 2000);
         }
 
         function 자동사냥토글() {
@@ -1601,8 +1661,9 @@
                 버튼.style.color = "red";
 
                 자동사냥타이머 = setInterval(() => {
-                    공격하기(); // 👉 여긴 이미 블로커 체크가 있으니 OK
-                }, 100); // 간격은 원하면 300~500ms로 변경 가능
+                    if (!자동사냥중 || 유저데이터.남은체력 <= 0) return;
+                    공격하기();
+                }, 500); // 1초 시뮬 + 약간 여유
             } else {
                 자동사냥중 = false;
                 clearInterval(자동사냥타이머);
