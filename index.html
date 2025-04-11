@@ -1093,10 +1093,11 @@
         }
 
         function 전투화면보여주기(유저) {
-            자동사냥중 = false;
-            clearInterval(자동사냥타이머);
-            자동사냥타이머 = null;
-
+            if (!자동사냥유지) {
+                자동사냥중 = false;
+                clearInterval(자동사냥타이머);
+                자동사냥타이머 = null;
+            }
             document.getElementById("로그인화면").style.display = "none";
             document.getElementById("전당화면").style.display = "none";
             document.getElementById("스킬화면").style.display = "none";
@@ -1174,7 +1175,7 @@
                     }
                 }, 5000);
             }
-            
+
             if (등급 !== "일반") {
                 유저데이터.강림몬스터 = {
                     등급,
@@ -2098,7 +2099,7 @@ ${스킬.설명} (${확률}% / 🔧 ${소모량}숙련도)
                 delete 유저데이터.강림몬스터;
 
                 db.ref("users/" + uid).set(유저데이터).then(() => {
-                    전투화면보여주기();
+                    전투화면보여주기(유저데이터, true);
 
                     // ✅ 승리 UI 출력
                     document.getElementById("승리패배로그").innerText = "승리";
