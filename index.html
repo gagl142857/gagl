@@ -728,6 +728,8 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
+ 
+
         let uid = "";
         let 유저데이터 = {};
         let 현재악마 = null;
@@ -1055,7 +1057,6 @@
                             스킬: {} // 일단 빈 객체로 넣고 바로 아래에서 채움
                         };
 
-                        자동사냥중 = false;
                         for (const 스킬 of 스킬목록) {
                             유저데이터.스킬[스킬.키] = 0;
                         }
@@ -1089,15 +1090,9 @@
             document.getElementById("로그인화면").style.display = "block";
             document.getElementById("획득로그").innerText = "";
             document.getElementById("레벨업표시").innerText = "";
-            화면해제();
         }
 
         function 전투화면보여주기(유저) {
-            if (!자동사냥유지) {
-                자동사냥중 = false;
-                clearInterval(자동사냥타이머);
-                자동사냥타이머 = null;
-            }
             document.getElementById("로그인화면").style.display = "none";
             document.getElementById("전당화면").style.display = "none";
             document.getElementById("스킬화면").style.display = "none";
@@ -1168,11 +1163,8 @@
                 버튼.innerText = "⏱ 자동사냥";
                 버튼.style.color = "white";
 
-                // ✅ 조건 추가: 실제 등급이 일반이 아닌 경우만 재시작
                 setTimeout(() => {
-                    if (!자동사냥중 && 유저데이터.강림몬스터) {
-                        자동사냥토글();
-                    }
+                    자동사냥토글();
                 }, 5000);
             }
 
@@ -2099,7 +2091,7 @@ ${스킬.설명} (${확률}% / 🔧 ${소모량}숙련도)
                 delete 유저데이터.강림몬스터;
 
                 db.ref("users/" + uid).set(유저데이터).then(() => {
-                    전투화면보여주기(유저데이터, true);
+                    전투화면보여주기();
 
                     // ✅ 승리 UI 출력
                     document.getElementById("승리패배로그").innerText = "승리";
