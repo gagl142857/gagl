@@ -728,7 +728,7 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
- 
+
 
         let uid = "";
         let 유저데이터 = {};
@@ -988,8 +988,7 @@
             });
         }
 
-        document.getElementById("공격버튼").style.display = "none";
-
+        
 
         auth.onAuthStateChanged(function (user) {
             if (user) {
@@ -1121,7 +1120,7 @@
                 레어: 0.1
             };
 
-            const 층수 = 유저데이터?.현재층 ?? 1;
+            const 층수 = 유저데이터.현재층;
             const 증가치 = 0.001 * (층수 - 1); // 0.5%씩 증가
 
             const 몬스터출현확률 = {
