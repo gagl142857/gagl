@@ -2,17 +2,6 @@
 <html lang="ko">
 
 <head>
-    <script>
-        fetch('/version.txt')
-            .then(res => res.text())
-            .then(version => {
-                const saved = localStorage.getItem('version');
-                if (saved !== version.trim()) {
-                    localStorage.setItem('version', version.trim());
-                    location.reload(true);
-                }
-            });
-    </script>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
@@ -1124,11 +1113,19 @@
             document.getElementById("총숙련도").innerText = typeof 유저데이터.숙련도 === "number" ? 유저데이터.숙련도.toLocaleString() : "0";
             document.getElementById("획득숙련도").innerText = "0";
 
-            // ✅ 특수 몬스터 출현 확률
-            const 몬스터출현확률 = {
+            const baseRate = {
                 고대: 0.001,
                 신화: 0.01,
                 레어: 0.1
+            };
+
+            const 층수 = 유저데이터.현재층;
+            const 증가치 = 0.001 * (층수 - 1); // 0.5%씩 증가
+
+            const 몬스터출현확률 = {
+                고대: baseRate.고대 + 증가치,
+                신화: baseRate.신화 + 증가치,
+                레어: baseRate.레어 + 증가치
             };
 
             const 기본이름 = 악마리스트[(유저데이터.현재악마번호 - 1) % 악마리스트.length];
@@ -1376,15 +1373,21 @@
 
             유저데이터.골드 -= 강화비용;
 
+            const 기존강화 = 장비.강화 || 0; // 실패 대비 현재 강화 수치 저장
+
             const 성공 = Math.random() < 0.5;
             if (성공) {
-                장비.강화 = (장비.강화 || 0) + 1;
+                장비.강화 = 기존강화 + 1;
                 장비.공격력 += 강화공격력;
                 유저데이터.공격력 += 강화공격력;
                 강화이펙트보여주기(박스, "강화 성공!", "#00c851");
             } else {
                 강화이펙트보여주기(박스, "강화 실패!", "#ef4444");
             }
+
+            const 로그메시지 = 성공
+                ? `[${유저데이터.아이디}] ${장비.이름} 강화 +${장비.강화} 성공!`
+                : `[${유저데이터.아이디}] ${장비.이름} 강화 +${기존강화} 실패`;
 
             화면잠금();
             db.ref("users/" + uid).update({
@@ -1395,11 +1398,6 @@
                 장비화면보여주기();
                 화면해제();
             });
-
-            // ✅ 성공 또는 실패 후 로그 저장
-            const 로그메시지 = 성공
-                ? `[${유저데이터.아이디}] ${장비.이름} 강화 +${장비.강화} 성공!`
-                : `[${유저데이터.아이디}] ${장비.이름} 강화 +${장비.강화} 실패`;
 
             const 로그객체 = {
                 아이디: 유저데이터.아이디,
