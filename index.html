@@ -1342,6 +1342,8 @@
                 return;
             }
 
+            장비목록.sort((a, b) => b.공격력 - a.공격력);
+
             장비목록.forEach(장비 => {
                 const 박스 = document.createElement("div");
                 박스.className = `기본테두리 양쪽정렬 장비-${장비.등급}`;
