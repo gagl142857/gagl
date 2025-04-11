@@ -728,18 +728,7 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        const 현재버전 = "1.0.1"; // ← 여기 숫자만 변경해주면 돼요
-
-        db.ref("시스템/버전").on("value", (snapshot) => {
-            const 서버버전 = snapshot.val();
-            if (서버버전 && 서버버전 !== 현재버전) {
-                alert("업데이트가 감지되어 새로고침합니다.");
-                location.reload(true);
-            }
-        });
-
-
-        let uid = "";
+         let uid = "";
         let 유저데이터 = {};
         let 현재악마 = null;
 
