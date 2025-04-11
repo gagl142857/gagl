@@ -728,7 +728,7 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-         let uid = "";
+        let uid = "";
         let 유저데이터 = {};
         let 현재악마 = null;
 
@@ -1055,6 +1055,7 @@
                             스킬: {} // 일단 빈 객체로 넣고 바로 아래에서 채움
                         };
 
+                        자동사냥중 = false;
                         for (const 스킬 of 스킬목록) {
                             유저데이터.스킬[스킬.키] = 0;
                         }
@@ -1092,6 +1093,10 @@
         }
 
         function 전투화면보여주기(유저) {
+            자동사냥중 = false;
+            clearInterval(자동사냥타이머);
+            자동사냥타이머 = null;
+
             document.getElementById("로그인화면").style.display = "none";
             document.getElementById("전당화면").style.display = "none";
             document.getElementById("스킬화면").style.display = "none";
