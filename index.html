@@ -673,15 +673,16 @@
 
     <div id="장비화면" style="display: none;">
         <div class="밑줄 양쪽정렬">
-            <div id="">
+            <div>
                 강림카운트
             </div>
-            <div id="장비목록">
-
+            <div class="가로정렬">
+                <div id="장비목록"></div>
+                <div class="버튼" onclick="장비자동합성()">자동합성</div> <!-- ✅ 추가 위치 -->
             </div>
         </div>
 
-        <div class="사백픽셀테두리" id="장비컨테이너">
+        <div class="사백픽셀테두리 세로정렬" id="장비컨테이너">
         </div>
     </div>
 
@@ -969,6 +970,39 @@
                 박스.removeChild(박스.firstChild);
             }
         }
+
+        function 장비자동합성() {
+            const 목록 = 유저데이터.장비목록 || [];
+            const 합성결과 = {};
+
+            // 1️⃣ 같은 이름+등급 기준으로 공격력 누적
+            for (const 장비 of 목록) {
+                const 키 = `${장비.등급}_${장비.이름}`;
+                if (!합성결과[키]) {
+                    합성결과[키] = { ...장비 };
+                } else {
+                    합성결과[키].공격력 += 장비.공격력;
+                }
+            }
+
+            // 2️⃣ 새로운 장비 목록 생성
+            const 새로운목록 = Object.values(합성결과);
+
+            // 3️⃣ 유저데이터 갱신
+            const 총공격력 = 새로운목록.reduce((a, b) => a + b.공격력, 0);
+            유저데이터.장비목록 = 새로운목록;
+            유저데이터.공격력 = 총공격력;
+
+            화면잠금();
+            db.ref("users/" + uid).update({
+                장비목록: 유저데이터.장비목록,
+                공격력: 유저데이터.공격력
+            }).then(() => {
+                장비화면보여주기();
+                화면해제();
+            });
+        }
+
 
         auth.onAuthStateChanged(function (user) {
             if (user) {
