@@ -773,7 +773,7 @@
         const auth = firebase.auth();
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-12T15:33:00+09:00").getTime();
-        document.getElementById("버전표시").innerText = "v1.0.3";
+        document.getElementById("버전표시").innerText = "v1.0.4";
 
 
 
@@ -1084,28 +1084,37 @@
         }
 
         function 드랍로그추가(아이디, 장비) {
-            // if (장비.등급 === "일반") return;
-            const 박스 = document.getElementById("드랍로그박스");
-            const 줄 = document.createElement("div");
+            db.ref("users").orderByChild("아이디").equalTo(아이디).once("value").then(userSnap => {
+                let 허용 = true;
+                userSnap.forEach(child => {
+                    const 유저 = child.val();
+                    const 생성시각 = new Date(유저?.생성시각).getTime();
+                    if (생성시각 < 기준시각) 허용 = false;
+                });
 
-            const 색상맵 = {
-                "일반": "#ffffff",
-                "레어": "#2665c9",
-                "신화": "#c59b20",
-                "고대": "#c825cd",
-                "태초": "#cd2525"
-            };
-            줄.innerText = 장비.로그
-                ? 장비.로그
-                : `[${아이디}] ${장비.이름} (공격력 +${장비.공격력}) 드랍!`;
-            줄.style.color = 색상맵[장비.등급] || "white";
+                if (!허용) return;
 
-            박스.appendChild(줄);
+                const 박스 = document.getElementById("드랍로그박스");
+                const 줄 = document.createElement("div");
 
-            // 20개 초과 시 맨 위 제거
-            while (박스.childNodes.length > 20) {
-                박스.removeChild(박스.firstChild);
-            }
+                const 색상맵 = {
+                    "일반": "#ffffff",
+                    "레어": "#2665c9",
+                    "신화": "#c59b20",
+                    "고대": "#c825cd",
+                    "태초": "#cd2525"
+                };
+                줄.innerText = 장비.로그
+                    ? 장비.로그
+                    : `[${아이디}] ${장비.이름} (공격력 +${장비.공격력}) 드랍!`;
+                줄.style.color = 색상맵[장비.등급] || "white";
+
+                박스.appendChild(줄);
+
+                while (박스.childNodes.length > 20) {
+                    박스.removeChild(박스.firstChild);
+                }
+            });
         }
 
 
@@ -2528,4 +2537,3 @@ ${스킬.설명} (${확률}% / 🔧 ${소모량}숙련도)
 아이콘선별
 css색상등록
 스킬화면아이콘등록 -->
-
