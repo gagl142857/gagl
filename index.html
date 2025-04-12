@@ -432,6 +432,10 @@
             /* ✅ 추가 */
         }
 
+        #전투화면 {
+            position: relative;
+        }
+
         .발굴 {
             stroke: #3b82f6;
         }
@@ -441,6 +445,12 @@
             /* 남색 계열 */
         }
 
+        .자동사냥 {
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #fafafa;
+            color: black;
+        }
 
         /* css추가 */
     </style>
@@ -604,6 +614,14 @@
                     </div>
                 </div>
 
+                <div class="세로정렬" id="전투버튼박스">
+                    <div>
+                        <div class="버튼" id="공격버튼">⚔️ 공격하기</div>
+                    </div>
+                    <div class="버튼" id="자동사냥버튼">⏱ 자동사냥</div>
+                </div>
+
+
                 <div class="가로정렬" id="승리패배로그">
                 </div>
                 <div class="가로정렬" id="획득로그">
@@ -615,10 +633,6 @@
             </div>
         </div>
 
-        <div class="사백픽셀테두리 가로정렬" id="전투버튼박스">
-            <div class="버튼" id="공격버튼">⚔️ 공격하기</div>
-            <div class="버튼" id="자동사냥버튼">⏱ 자동사냥</div>
-        </div>
 
 
 
@@ -740,6 +754,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+        const 기준시각 = new Date("2025-04-12T14:13:00+09:00").getTime();
 
 
 
@@ -755,20 +770,21 @@
         let 현재몬스터이름 = "";
         let 현재몬스터등급 = "일반";
 
-        const 최소버전 = 1;
-
         const 레어몬스터 = [
-            "CCCXIII. 바포메트",
             "IV. 디아블로",
-            "CMXCIX. 메피스토",
-            "CXXXI. 릴리트",
         ];
         const 신화몬스터 = [
             "LXXXIX. 레비아탄",
-            "DCCLXXVII. 벨제붑",
+            // "DCCLXXVII. 벨제붑",
         ];
         const 고대몬스터 = [
-            "DCLXVI. 사탄"
+            "DCCLXXVII. 벨제부브"
+        ];
+        const 태초몬스터 = [
+            "Ω. 사탄"
+        ];
+        const 공허몬스터 = [
+            "Ξ. 바론"
         ];
 
 
@@ -926,49 +942,35 @@
             ...퀵니스스킬목록
         ];
 
-        const 일반접두사 = ["빛"];
-        const 일반접미사 = ["검"];
-
         function 일반등급장비이름생성() {
-            const 접두사 = 일반접두사[Math.floor(Math.random() * 일반접두사.length)];
-            const 접미사 = 일반접미사[Math.floor(Math.random() * 일반접미사.length)];
-            return `${접두사}의 ${접미사}`;
+            return `디아블로의 심장`;
         }
-
-        const 레어접두사 = [
-            "광휘"
-        ];
-
-        const 레어접미사 = [
-            "파편"
-        ];
 
         function 레어등급장비이름생성() {
-            const 접두사 = 레어접두사[Math.floor(Math.random() * 레어접두사.length)];
-            const 접미사 = 레어접미사[Math.floor(Math.random() * 레어접미사.length)];
-            return `${접두사}의 ${접미사}`;
+            return `레비아탄의 비늘`;
         }
 
-        const 신화접두사 = [
-            "신성"      // 지옥의 창
-        ];
+        function 신화등급장비이름생성() {
+            return `벨제부브의 꼬리`;
+        }
 
-        const 신화접미사 = [
-            "서"
-        ];
+        function 태초등급장비이름생성() {
+            return `사탄의 날개`;
+        }
+
+        function 공허등급장비이름생성() {
+            return `바론의 촉수`;
+        }
 
         const 장비드랍확률 = {
-            레어: 0.1,    // 100%
-            신화: 0.5,    // 100%
-            고대: 0.8     // 100%
+            레어: 1,    // 100%
+            신화: 1,    // 100%
+            고대: 1,     // 100%
+            태초: 1,
+            공허: 1   // 100%
         };
 
 
-        function 신화등급장비이름생성() {
-            const 접두사 = 신화접두사[Math.floor(Math.random() * 신화접두사.length)];
-            const 접미사 = 신화접미사[Math.floor(Math.random() * 신화접미사.length)];
-            return `${접두사}의 ${접미사}`;
-        }
 
         function 장비드랍시도(등급, 몬스터체력) {
             const 확률 = 장비드랍확률[등급] ?? 0;
@@ -988,6 +990,12 @@
             } else if (등급 === "고대") {
                 이름 = 신화등급장비이름생성();
                 드랍등급 = "신화";
+            } else if (등급 === "태초") {
+                이름 = 고대등급장비이름생성();
+                드랍등급 = "고대";
+            } else if (등급 === "공허") {
+                이름 = 태초등급장비이름생성();
+                드랍등급 = "태초";
             } else {
                 return;
             }
@@ -997,6 +1005,8 @@
             if (등급 === "레어") 기본공격력 = 10;
             else if (등급 === "신화") 기본공격력 = 100;
             else if (등급 === "고대") 기본공격력 = 1000;
+            else if (등급 === "고대") 기본공격력 = 10000;
+            else if (등급 === "고대") 기본공격력 = 100000;
 
             const 오차범위 = 기본공격력 * 0.2;
             const 공격력 = Math.floor(기본공격력 + (Math.random() * 2 - 1) * 오차범위);
@@ -1005,11 +1015,20 @@
 
             if (기존) {
                 기존.공격력 += 공격력;
-                기존.강화 = (기존.강화 || 0) + 1;
+
+                // ✅ 합성횟수 증가
+                const 키 = `${기존.이름}|${기존.등급}`;
+                유저데이터.합성기록[키] = (유저데이터.합성기록[키] ?? 0) + 1;
+
                 유저데이터.공격력 += 공격력;
                 유저데이터.최대체력 += 1;
             } else {
                 const 신규 = { 이름, 등급: 드랍등급, 공격력, 강화: 0 };
+
+                // ✅ 최초 합성횟수 0으로 설정
+                const 키 = `${이름}|${드랍등급}`;
+                유저데이터.합성기록[키] = 0;
+
                 유저데이터.장비목록.push(신규);
                 유저데이터.공격력 += 공격력;
             }
@@ -1017,6 +1036,7 @@
             화면잠금();
             db.ref("users/" + uid).update({
                 장비목록: 유저데이터.장비목록,
+                합성기록: 유저데이터.합성기록, // ← 이 줄을 추가해야 함
                 공격력: 유저데이터.공격력,
                 최대체력: 유저데이터.최대체력
             }).then(() => {
@@ -1024,7 +1044,11 @@
             });
 
             const 장비 = 유저데이터.장비목록.find(z => z.이름 === 이름);
-            const 로그메시지 = `[${유저데이터.아이디}] ${장비.이름}${장비.강화 ? " +" + 장비.강화 : ""} (공격력 +${공격력}) 드랍!`;
+
+            // ✅ 바로 여기!
+            const 키 = `${장비.이름}|${장비.등급}`;
+            const 합성수 = 유저데이터.합성기록?.[키] ?? 0;
+            const 로그메시지 = `[${유저데이터.아이디}] ${장비.이름}(${합성수})${장비.강화 ? " +" + 장비.강화 : ""} (공격력 +${공격력}) 드랍!`;
 
             화면잠금();
             db.ref("드랍로그").push({
@@ -1035,7 +1059,6 @@
                 강화: 장비.강화,
                 로그: 로그메시지,
                 시각: Date.now(),
-                클라이언트버전: 최소버전
             }).then(() => {
                 화면해제();
             });
@@ -1049,7 +1072,8 @@
                 "일반": "#ffffff",
                 "레어": "#2665c9",
                 "신화": "#c59b20",
-                "고대": "#c825cd"
+                "고대": "#c825cd",
+                "태초": "#cd2525"
             };
             줄.innerText = 장비.로그
                 ? 장비.로그
@@ -1064,88 +1088,98 @@
             }
         }
 
-        // function 장비자동합성() {
-        //     const 목록 = 유저데이터.장비목록 || [];
-        //     const 합성결과 = {};
-
-        //     for (const 장비 of 목록) {
-        //         const 키 = `${장비.등급}_${장비.이름}_${장비.강화 || 0}`;
-        //         if (!합성결과[키]) {
-        //             합성결과[키] = { ...장비 };
-        //         } else {
-        //             합성결과[키].공격력 += 장비.공격력;
-        //         }
-        //     }
-
-        //     const 새로운목록 = Object.values(합성결과);
-        //     유저데이터.장비목록 = 새로운목록;
-
-        //     화면잠금();
-        //     db.ref("users/" + uid).update({
-        //         장비목록: 유저데이터.장비목록,
-        //         공격력: 유저데이터.공격력
-        //     }).then(() => {
-        //         장비화면보여주기();
-        //         화면해제();
-        //     });
-        // }
-
 
 
         auth.onAuthStateChanged(function (user) {
             if (user) {
                 uid = user.uid;
 
-                // document.getElementById("로딩화면").style.display = "block";
-                // UID 기준으로 DB 조회
                 화면잠금();
                 db.ref("users/" + uid).once("value").then((snapshot) => {
                     if (snapshot.exists()) {
                         const 데이터 = snapshot.val();
+                        const 생성시각 = Date.parse(데이터?.생성시각 || "");
+                        if (!isNaN(생성시각) && 생성시각 < 기준시각) {
+                            const 경고 = document.createElement("div");
+                            경고.innerHTML = `
+                        <div style="
+                            position: fixed;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: black;
+                            color: red;
+                            font-size: 18px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            z-index: 99999;
+                            animation: 깜빡임 1s infinite;
+                        ">
+                            <div style="margin-bottom: 20px; text-align: center;">
+                                <p>🌑 하늘이 어두워지고...</p>
+                                <p>☄️ 운석이 다가옵니다...</p>
+                                <p style="font-size: 24px; font-weight: bold; color: orange;">💥 메테오 작렬!</p>
+                            </div>
+                            <button id="확인버튼" style="
+                                padding: 10px 20px;
+                                font-size: 16px;
+                                background: red;
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                cursor: pointer;
+                            ">확인</button>
+                        </div>
+                        <style>
+                        @keyframes 깜빡임 {
+                            0% { background-color: black; }
+                            50% { background-color: darkred; }
+                            100% { background-color: black; }
+                        }
+                        </style>
+                    `;
+                            document.body.appendChild(경고);
+
+                            document.getElementById("확인버튼").addEventListener("click", () => {
+                                db.ref("users/" + uid).remove().then(() => {
+                                    location.reload(); // 로그인화면으로
+                                });
+                            });
+                            return;
+                        }
 
                         if (데이터.아이디 && 데이터.아이디.trim() !== "") {
                             유저데이터 = 데이터;
 
-                            // ✅ 최대체력 기본값 설정
-                            if (!유저데이터.최대체력) {
-                                유저데이터.최대체력 = 100;
-                            }
+                            // ✅ 조우기록 필드 강제 초기화
+                            if (!유저데이터.조우기록) 유저데이터.조우기록 = {};
+                            if (!("레어" in 유저데이터.조우기록)) 유저데이터.조우기록.레어 = 0;
+                            if (!("신화" in 유저데이터.조우기록)) 유저데이터.조우기록.신화 = 0;
+                            if (!("고대" in 유저데이터.조우기록)) 유저데이터.조우기록.고대 = 0;
+                            if (!("태초" in 유저데이터.조우기록)) 유저데이터.조우기록.태초 = 0;
+                            if (!("공허" in 유저데이터.조우기록)) 유저데이터.조우기록.공허 = 0;
+                            if (!유저데이터.최대체력) 유저데이터.최대체력 = 100;
+                            if (!유저데이터.스킬) 유저데이터.스킬 = {};
+                            if (!유저데이터.장비목록) 유저데이터.장비목록 = [];
+                            if (!유저데이터.강림몬스터) 유저데이터.강림몬스터 = null;
 
-                            // ⬇️ 여기!
-                            if (!유저데이터.스킬) {
-                                유저데이터.스킬 = {};
-                            }
-
-                            if (!유저데이터.조우기록) {
-                                유저데이터.조우기록 = { 레어: 0, 신화: 0, 고대: 0 };
-                            }
-
-                            if (!유저데이터.장비목록) {
-                                유저데이터.장비목록 = [];
-                            }
-
-                            if (!유저데이터.강림몬스터) {
-                                유저데이터.강림몬스터 = null;
-                            }
                             for (const 스킬 of 스킬목록) {
                                 if (!(스킬.키 in 유저데이터.스킬)) {
                                     유저데이터.스킬[스킬.키] = 0;
                                 }
                             }
 
-                            유저데이터.클라이언트버전 = 최소버전;
-                            db.ref("users/" + uid).update({ 클라이언트버전: 최소버전 });
+                            if (!유저데이터.합성기록) 유저데이터.합성기록 = {};
 
                             전투화면보여주기(유저데이터);
                             화면해제();
                         } else {
-                            // ❌ 아이디 없음 → 로그인화면 진입
                             유저데이터 = 데이터;
                             로그인화면보여주기();
                             화면해제();
                         }
                     } else {
-                        // ✅ 완전 신규 유저 → 기본 데이터 생성 및 저장
+                        // 신규 유저 생성
                         유저데이터 = {
                             아이디: "",
                             생성시각: new Date().toISOString(),
@@ -1158,24 +1192,22 @@
                             숙련도: 0,
                             현재층: 1,
                             현재악마번호: 1,
-                            스킬: {} // 일단 빈 객체로 넣고 바로 아래에서 채움
+                            스킬: {}
                         };
 
                         for (const 스킬 of 스킬목록) {
                             유저데이터.스킬[스킬.키] = 0;
                         }
-                        유저데이터.클라이언트버전 = 최소버전;
-                        db.ref("users/" + uid).update({ 클라이언트버전: 최소버전 });
 
                         db.ref("users/" + uid).set(유저데이터).then(() => {
-                            로그인화면보여주기(); // 아이디 없으므로 로그인화면부터
+                            로그인화면보여주기();
                             화면해제();
                         });
                     }
                 });
 
             } else {
-                // 아직 로그인되지 않았으면 → 익명 로그인 시작
+                // 익명 로그인
                 auth.signInAnonymously();
             }
         });
@@ -1222,18 +1254,20 @@
             document.getElementById("획득숙련도").innerText = "0";
 
             const baseRate = {
-                고대: 0.001,
-                신화: 0.01,
-                레어: 0.1
+                공허: 0.000001,
+                태초: 0.00001,
+                고대: 0.0001,
+                신화: 0.001,
+                레어: 0.01
             };
 
             const 층수 = 유저데이터.현재층;
-            const 증가치 = 0.001 * (층수 - 1); // 0.5%씩 증가
-
-            const 몬스터출현확률 = {
-                고대: baseRate.고대 + 증가치,
-                신화: baseRate.신화 + 증가치,
-                레어: baseRate.레어 + 증가치
+            const 등장률 = {
+                공허: baseRate.공허 * 층수,
+                태초: baseRate.태초 * 층수,
+                고대: baseRate.고대 * 층수,
+                신화: baseRate.신화 * 층수,
+                레어: baseRate.레어 * 층수
             };
 
             const 기본이름 = 악마리스트[(유저데이터.현재악마번호 - 1) % 악마리스트.length];
@@ -1247,25 +1281,25 @@
                 특수몬스터이름 = 유저데이터.강림몬스터.이름;
             } else {
                 const r = Math.random();
-                if (r < 몬스터출현확률.고대) {
+
+                if (r < 등장률.공허) {
+                    특수몬스터이름 = 공허몬스터[Math.floor(Math.random() * 공허몬스터.length)];
+                    등급 = "공허";
+                } else if (r < 등장률.공허 + 등장률.태초) {
+                    특수몬스터이름 = 태초몬스터[Math.floor(Math.random() * 태초몬스터.length)];
+                    등급 = "태초";
+                } else if (r < 등장률.공허 + 등장률.태초 + 등장률.고대) {
                     특수몬스터이름 = 고대몬스터[Math.floor(Math.random() * 고대몬스터.length)];
                     등급 = "고대";
-                } else if (r < 몬스터출현확률.고대 + 몬스터출현확률.신화) {
+                } else if (r < 등장률.공허 + 등장률.태초 + 등장률.고대 + 등장률.신화) {
                     특수몬스터이름 = 신화몬스터[Math.floor(Math.random() * 신화몬스터.length)];
                     등급 = "신화";
-                } else if (r < 몬스터출현확률.고대 + 몬스터출현확률.신화 + 몬스터출현확률.레어) {
+                } else if (r < 등장률.공허 + 등장률.태초 + 등장률.고대 + 등장률.신화 + 등장률.레어) {
                     특수몬스터이름 = 레어몬스터[Math.floor(Math.random() * 레어몬스터.length)];
                     등급 = "레어";
                 }
             }
 
-
-            // if (자동사냥중 && 등급 !== "일반") {
-            //     자동사냥중지();
-            //     setTimeout(() => {
-            //         자동사냥토글();
-            //     }, 5000);
-            // }
 
             if (등급 !== "일반") {
                 유저데이터.강림몬스터 = {
@@ -1277,7 +1311,9 @@
                 const 색상맵 = {
                     "레어": "#2665c9",
                     "신화": "#c59b20",
-                    "고대": "#c825cd"
+                    "고대": "#c825cd",
+                    "태초": "#cd2525",
+                    "공허": "#2acd25"
                 };
 
 
@@ -1332,15 +1368,11 @@
                 "일반": "#c71414",
                 "레어": "#2665c9",
                 "신화": "#c59b20",
-                "고대": "#c825cd"
+                "고대": "#c825cd",
+                "태초": "#cd2525",
+                "공허": "#2acd25"
 
             }[등급];
-
-
-            // background-color: #8b5cf6; 
-            // background-color: #3bf0f6; 
-            // background-color: #5cf669; 
-            // background-color: #f6ec5c; 
 
             document.getElementById("획득로그").innerText = "";
             setTimeout(고정이펙트영역초기화, 0);
@@ -1374,8 +1406,12 @@
 
                 snapshot.forEach((child) => {
                     const 데이터 = child.val();
+
+                    // 🔒 생성시각 필터
+                    const 생성시각 = new Date(데이터.생성시각).getTime();
+                    if (생성시각 < 기준시각) return;
+
                     if (!데이터.아이디 || 데이터.아이디.trim() === "") return;
-                    if ((데이터.클라이언트버전 || 0) < 최소버전) return;
                     유저리스트.push(데이터);
                 });
 
@@ -1433,14 +1469,17 @@
             document.getElementById("획득로그").innerText = "";
             document.getElementById("레벨업표시").innerText = "";
 
-            const 기록 = 유저데이터.조우기록 || { 레어: 0, 신화: 0, 고대: 0 };
+            const 기록 = 유저데이터.조우기록 || { 레어: 0, 신화: 0, 고대: 0, 태초: 0, 공허: 0 };
             document.getElementById("장비목록").innerText =
-                `레어 : ${기록.레어} 신화 : ${기록.신화} 고대 : ${기록.고대}`;
+                `레어:${기록.레어} 신화:${기록.신화} 고대:${기록.고대} 태초:${기록.태초} 공허:${기록.공허}`;
 
             const 장비컨테이너 = document.getElementById("장비컨테이너");
             장비컨테이너.innerHTML = "";
             document.getElementById("장비골드표시").innerText =
                 `${유저데이터.골드.toLocaleString()} Gold     |     공격력 ${유저데이터.공격력}`;
+
+            document.getElementById("장비골드표시").innerText =
+                `💰 ${유저데이터.골드.toLocaleString()} Gold | 공격력 🗡 ${유저데이터.공격력} | 최대체력 ❤️ ${유저데이터.최대체력}`;
 
             const 장비목록 = 유저데이터.장비목록 || [];
 
@@ -1454,8 +1493,15 @@
             장비목록.forEach(장비 => {
                 const 박스 = document.createElement("div");
                 박스.className = `기본테두리 양쪽정렬 장비-${장비.등급}`;
+
+                // ✅ 합성횟수 가져오기
+                const 키 = `${장비.이름}|${장비.등급}`;
+                const 합성수 = 유저데이터.합성기록?.[키] ?? 0;
+                const 강화표시 = 장비.강화 ? ` +${장비.강화}` : "";
+                const 이름표시 = `${장비.이름}(${합성수})${강화표시}`;
+
                 박스.innerHTML = `
-      <div>[${장비.등급}] ${장비.이름}${장비.강화 ? " +" + 장비.강화 : ""}</div>
+      <div>[${장비.등급}] ${이름표시}</div>
       <div>
         <svg onclick="장비강화('${장비.이름}', '${장비.등급}', this.closest('.기본테두리'))"
          xmlns="http://www.w3.org/2000/svg"
@@ -1477,8 +1523,8 @@
             const 장비 = 유저데이터.장비목록.find(z => z.이름 === 이름 && z.등급 === 등급);
             if (!장비) return alert("장비를 찾을 수 없습니다.");
 
-            const 강화비용 = { 일반: 10000, 레어: 100000, 신화: 1000000 }[등급];
-            const 강화공격력 = { 일반: 10, 레어: 100, 신화: 1000 }[등급];
+            const 강화비용 = { 일반: 10000, 레어: 100000, 신화: 1000000, 고대: 10000000, 태초: 100000000 }[등급];
+            const 강화공격력 = { 일반: 10, 레어: 100, 신화: 1000, 고대: 10000, 태초: 100000 }[등급];
 
             if (유저데이터.골드 < 강화비용) return alert("골드가 부족합니다.");
 
@@ -1498,9 +1544,12 @@
                 강화이펙트보여주기(박스, "강화 실패!", "#ef4444");
             }
 
+            const 키 = `${장비.이름}|${장비.등급}`;
+            const 합성수 = 유저데이터.합성기록?.[키] ?? 0;
+
             const 로그메시지 = 성공
-                ? `[${유저데이터.아이디}] ${장비.이름} 강화 +${장비.강화} 성공!`
-                : `[${유저데이터.아이디}] ${장비.이름} 강화 +${기존강화} 실패`;
+                ? `[${유저데이터.아이디}] ${장비.이름}(${합성수}) 강화 +${장비.강화} 성공!`
+                : `[${유저데이터.아이디}] ${장비.이름}(${합성수}) 강화 +${기존강화} 실패`;
 
             화면잠금();
             db.ref("users/" + uid).update({
@@ -2078,33 +2127,35 @@ ${스킬.설명} (${확률}% / 🔧 ${소모량}숙련도)
         function 현재악마불러오기(층, 번호, 등급 = "일반") {
             const 악마수 = 72;
 
-            // 🧩 기본값
-            let 체력기본 = 200;
-            let 방어기본 = 10;
+            // ✅ 지수 보정 (1.01배씩 성장)
+            let 체력기본 = 400 * Math.pow(1.1, 층 - 1);
+            let 방어기본 = 10 * Math.pow(1.1, 층 - 1);
 
-            // 🔁 층마다 1.5배씩 증가
-            for (let i = 1; i < 층; i++) {
-                체력기본 *= 1.5;
-                방어기본 *= 1.5;
-            }
-
-            // 🔀 스탯에 랜덤 80%~120% 적용
-            const 체력 = Math.floor(체력기본 * (Math.random() * 0.4 + 0.8));
-            const 방어력 = Math.floor(방어기본 * (Math.random() * 0.4 + 0.8));
+            // 🔀 스탯에 랜덤 90%~110% 적용
+            const 체력 = Math.floor(체력기본 * (Math.random() * 0.2 + 0.9));
+            const 방어력 = Math.floor(방어기본 * (Math.random() * 0.2 + 0.9));
 
             // 🧩 등급 보정
             let 최종체력 = 체력;
             let 최종방어 = 방어력;
             switch (등급) {
                 case "레어":
+                    최종체력 = Math.floor(체력 * 1.2);
+                    최종방어 = Math.floor(방어력 * 1.2);
+                    break;
+                case "신화":
                     최종체력 = Math.floor(체력 * 1.5);
                     최종방어 = Math.floor(방어력 * 1.5);
                     break;
-                case "신화":
-                    최종체력 = Math.floor(체력 * 2.0);
-                    최종방어 = Math.floor(방어력 * 2.0);
-                    break;
                 case "고대":
+                    최종체력 = Math.floor(체력 * 1.9);
+                    최종방어 = Math.floor(방어력 * 1.9);
+                    break;
+                case "태초":
+                    최종체력 = Math.floor(체력 * 2.4);
+                    최종방어 = Math.floor(방어력 * 2.4);
+                    break;
+                case "공허":
                     최종체력 = Math.floor(체력 * 3.0);
                     최종방어 = Math.floor(방어력 * 3.0);
                     break;
@@ -2322,13 +2373,19 @@ ${스킬.설명} (${확률}% / 🔧 ${소모량}숙련도)
         window.addEventListener("DOMContentLoaded", function () {
             document.getElementById("공격버튼").addEventListener("click", 공격하기);
 
-            // ✅ 여기에 추가
             db.ref("드랍로그").limitToLast(20).on("child_added", (snapshot) => {
                 const 로그 = snapshot.val();
-                // 🔒 버전 확인
-                if ((로그.클라이언트버전 ?? 0) < 최소버전) return;
 
-                드랍로그추가(로그.아이디, 로그);
+                db.ref("users").orderByChild("아이디").equalTo(로그.아이디).once("value").then(userSnap => {
+                    let 허용 = true;
+                    userSnap.forEach(child => {
+                        const 유저 = child.val();
+                        const 생성시각 = new Date(유저?.생성시각).getTime();
+                        if (생성시각 < 기준시각) 허용 = false;
+                    });
+
+                    if (허용) 드랍로그추가(로그.아이디, 로그);
+                });
             });
         });
 
@@ -2415,7 +2472,7 @@ ${스킬.설명} (${확률}% / 🔧 ${소모량}숙련도)
 
 
         function 숙련도소모계산(투자순번) {
-            return Math.floor(10 * Math.pow(1.05, 투자순번));
+            return Math.floor(10 * Math.pow(1.02, 투자순번));
         }
 
 
@@ -2451,3 +2508,9 @@ ${스킬.설명} (${확률}% / 🔧 ${소모량}숙련도)
 아이콘선별
 css색상등록
 스킬화면아이콘등록 -->
+
+
+
+<!-- 버전체크
+드랍로그함수수정
+전당화면보여주기수정 -->
