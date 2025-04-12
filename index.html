@@ -718,6 +718,17 @@
         </div>
     </div>
 
+    <div id="버전표시" style="
+    position: fixed;
+    top: 6px;
+    left: 10px;
+    color: #bebebe;
+    font-size: 12px;
+    z-index: 9999;
+    opacity: 0.8;
+  ">
+        v1.0.0
+    </div>
 
     <!-- 객체추가 -->
 
@@ -761,7 +772,8 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const 기준시각 = new Date("2025-04-12T14:29:00+09:00").getTime();
+        const 기준시각 = new Date("2025-04-12T15:15:00+09:00").getTime();
+        document.getElementById("버전표시").innerText = "v1.0.1";
 
 
 
@@ -1072,7 +1084,7 @@
         }
 
         function 드랍로그추가(아이디, 장비) {
-            if (장비.등급 === "일반") return;
+            // if (장비.등급 === "일반") return;
             const 박스 = document.getElementById("드랍로그박스");
             const 줄 = document.createElement("div");
 
@@ -1263,11 +1275,11 @@
             document.getElementById("획득숙련도").innerText = "0";
 
             const baseRate = {
-                공허: 0.000001,
-                태초: 0.00001,
-                고대: 0.0001,
-                신화: 0.001,
-                레어: 0.01
+                공허: 0.000000001,
+                태초: 0.00000001,
+                고대: 0.0000001,
+                신화: 0.000001,
+                레어: 0.00001
             };
 
             const 층수 = 유저데이터.현재층;
