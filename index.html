@@ -1065,6 +1065,7 @@
         }
 
         function 드랍로그추가(아이디, 장비) {
+            if (장비.등급 === "일반") return;
             const 박스 = document.getElementById("드랍로그박스");
             const 줄 = document.createElement("div");
 
