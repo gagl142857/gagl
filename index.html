@@ -754,7 +754,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const 기준시각 = new Date("2025-04-12T14:13:00+09:00").getTime();
+        const 기준시각 = new Date("2025-04-12T14:29:00+09:00").getTime();
 
 
 
@@ -1143,6 +1143,7 @@
                             document.getElementById("확인버튼").addEventListener("click", () => {
                                 db.ref("users/" + uid).remove().then(() => {
                                     location.reload(); // 로그인화면으로
+                                    화면해제();
                                 });
                             });
                             return;
