@@ -2211,7 +2211,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 `;
 
         document.getElementById("위층으로").addEventListener("click", () => {
-            if (유저데이터.현재층 >= 2) {
+            if (유저데이터.현재층 >= 20) {
                 메시지표시(층조절, 마법진, "마법진이 가로막고 있습니다", "white");
                 return;
             }
