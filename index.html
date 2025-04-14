@@ -504,7 +504,6 @@
     <div class="사백픽셀테두리 세로정렬" id="에너지박스" style="display: none;">
         <div class="양쪽정렬">
             <div style="color: #eab308;">
-                <!-- 루시드 zap 아이콘 SVG -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                     class="lucide lucide-zap-icon lucide-zap">
@@ -740,7 +739,7 @@
         const auth = firebase.auth();
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-13T18:19:00+09:00").getTime();
-        document.getElementById("버전표시").innerText = "v1.0.6";
+        document.getElementById("버전표시").innerText = "v1.0.7";
 
 
 
@@ -773,14 +772,47 @@
             "Ξ. 바론"
         ];
 
+
         const 색상맵 = {
             "일반": "#ffffff",
-            "레어": "#2665c9", // → "#2acd25"
-            "신화": "#c59b20", // → "#2665c9"
-            "고대": "#c825cd", // → "#c59b20"
-            "태초": "#cd2525", // → "#c825cd"
-            "공허": "#2acd25"  // → "#cd2525"
+            "레어": "#00ff00",
+            "신화": "#0000ff",
+            "고대": "#ffff00",
+            "태초": "#800080",
+            "공허": "#ff0000",
+
+            "빨": "#ff0000",
+            "주": "#ff8000",
+            "노": "#ffff00",
+            "초": "#00ff00",
+            "파": "#0080ff",
+            "남": "#8a2be2",
+            "보": "#800080",
+
+            "빨주": "#ff4000",
+            "주노": "#ffbf00",
+            "노초": "#80ff00",
+            "초파": "#00ff80",
+            "파남": "#4455d0",
+            "남보": "#851bb1"
         };
+
+        const 무지개색상 = [
+            "#ff0000", // 빨강
+            "#ff4000", // 주황빨강
+            "#ff8000", // 주황
+            "#ffbf00", // 황주황
+            "#ffff00", // 노랑
+            "#bfff00", // 연두노랑
+            "#80ff00", // 연두
+            "#40ff00", // 연두초록
+            "#00ff00", // 초록
+            "#00ff80", // 초록청록
+            "#00ffff", // 청록
+            "#0080ff", // 파랑
+            "#8000ff", // 보라
+            "#bf00ff"  // 자홍보라
+        ];
 
 
         function 일반등급장비이름생성() {
@@ -1049,7 +1081,7 @@
                             남은체력: 10,
                             최대체력: 10,
                             경험치: 0,
-                            골드: 100000,
+                            골드: 200000,
                             숙련도: 0,
                             현재층: 1,
                             현재악마번호: 1,
@@ -1350,7 +1382,12 @@
 
             장비목록.forEach(장비 => {
                 const 박스 = document.createElement("div");
-                박스.className = `기본테두리 양쪽정렬 장비-${장비.등급}`;
+                // 박스.className = `기본테두리 양쪽정렬 장비-${장비.등급}`;
+
+                박스.className = `기본테두리 양쪽정렬`;
+                박스.style.border = `1px solid ${색상맵[장비.등급]}`;
+
+
                 // ✅ 합성횟수 가져오기
                 const 키 = `${장비.이름}|${장비.등급}`;
                 const 합성수 = 유저데이터.합성기록?.[키] ?? 0;
@@ -1383,7 +1420,7 @@
             const 강화비용 = { 일반: 24000, 레어: 100000, 신화: 1000000, 고대: 10000000, 태초: 100000000, 공허: 1000000000 }[등급];
             const 강화공격력 = { 일반: 10, 레어: 100, 신화: 1000, 고대: 10000, 태초: 100000, 공허: 1000000 }[등급];
 
-            if (유저데이터.골드 < 강화비용) return 메시지표시(장비화면, "", `${강화비용.toLocaleString()}Gold가 필요합니다.`, "#cd4b25");
+            if (유저데이터.골드 < 강화비용) return 메시지표시(장비화면, `${머니아이콘}`, `${강화비용.toLocaleString()}Gold가 필요합니다.`, "#cd4b25");
 
             if (!confirm(`[${이름}]을(를) 강화하시겠습니까?\n골드 ${강화비용.toLocaleString()} 소모됩니다.`)) return;
 
@@ -1463,7 +1500,6 @@
         }
 
 
-        // ✅ 스킬화면 보여주기 전체 함수
         function 스킬화면보여주기() {
             document.getElementById("전투화면").style.display = "none";
             document.getElementById("에너지박스").style.display = "none";
@@ -1485,22 +1521,6 @@
             const 컨테이너 = document.getElementById("스킬컨테이너");
             컨테이너.innerHTML = "";
 
-            const 무지개색상 = [
-                "#ff0000", // 빨강
-                "#ff4000", // 주황빨강
-                "#ff8000", // 주황
-                "#ffbf00", // 황주황
-                "#ffff00", // 노랑
-                "#bfff00", // 연두노랑
-                "#80ff00", // 연두
-                "#40ff00", // 연두초록
-                "#00ff00", // 초록
-                "#00ff80", // 초록청록
-                "#00ffff", // 청록
-                "#0080ff", // 파랑
-                "#8000ff", // 보라
-                "#bf00ff"  // 자홍보라
-            ];
 
             const 스킬정보 = {
                 크리티컬: {
@@ -1621,7 +1641,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                             const 다음투자순번 = 총투자 + 1;
                             const 비용 = 숙련도소모(다음투자순번);
 
-                            if (전체레벨 >= 단계수 * 단계당레벨) return 메시지표시(스킬화면, "", "최종단계입니다.", "white");
+                            if (전체레벨 >= 단계수 * 단계당레벨) return 메시지표시(스킬화면, `${마스터아이콘}`, "최종단계입니다.", "white");
                             if (유저데이터.숙련도 < 비용) return 메시지표시(스킬화면, "", "숙련도가 부족합니다.", "ef4444");
 
                             유저데이터.숙련도 -= 비용;
@@ -1629,7 +1649,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                         }
 
                         else if (버튼텍스트 === "-") {
-                            if (전체레벨 <= 0) return 메시지표시(스킬화면, "", "회수할 스킬이 없습니다.", "ef4444");
+                            if (전체레벨 <= 0) return 메시지표시(스킬화면, `${실패아이콘}`, "회수할 스킬이 없습니다.", "ef4444");
 
                             const 총투자 = Object.values(유저데이터.스킬).reduce((a, b) => a + b, 0);
                             const 마지막순번 = 총투자;
@@ -1646,7 +1666,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                                 const 다음순번 = 총투자 + 1;
                                 const 비용 = 숙련도소모(다음순번);
                                 if (전체레벨 >= 단계수 * 단계당레벨) {
-                                    메시지표시(스킬화면, "", "최종단계입니다.", "white");
+                                    메시지표시(스킬화면, `${마스터아이콘}`, "최종단계입니다.", "white");
                                     break;
                                 }
                                 if (유저데이터.숙련도 < 비용) {
@@ -1713,7 +1733,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
             화면잠금();
             db.ref("users/" + uid).set(유저데이터).then(() => {
-                메시지표시(스킬화면, "", "숙련도가 모두 회수되었습니다", "white");
+                메시지표시(스킬화면, `${성공아이콘}`, "숙련도가 모두 회수되었습니다", "white");
                 스킬화면보여주기();
                 화면해제();
             });
@@ -1944,7 +1964,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
             }
             유저데이터.남은체력 = Math.min(유저데이터.최대체력, 유저데이터.남은체력 + 추가체력);
             if (추가체력 > 0) {
-                메시지표시(유저테두리안표시, "", `체력+${추가체력}`, "#00ffff");
+                메시지표시(유저테두리안표시, `${아이언바디아이콘}`, `+${추가체력}`, "#00ffff");
             }
 
 
@@ -2056,7 +2076,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                     document.getElementById("획득로그").style.color = "red";
                     document.getElementById("레벨업표시").innerText = "";
                     document.getElementById("획득로그").innerText = "";
-                    죽음메시지보여주기("💀 체력이 모두 소진되어 후퇴합니다!");
+                    // 죽음메시지보여주기("💀 체력이 모두 소진되어 후퇴합니다!");
                     화면해제();
                 });
 
@@ -2096,7 +2116,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
                 유저HP = Math.min(유저데이터.최대체력, 유저HP + 회복량);
                 if (회복량 > 0) {
-                    메시지표시(유저테두리안표시, "", `체력+${회복량}`, "#ffff00");
+                    메시지표시(유저테두리안표시, `${드레인아이콘}`, `+${회복량}`, "#ffff00");
 
                 }
                 const 보상 = 보상획득(유저데이터.현재층);
@@ -2128,7 +2148,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 let 기존골드 = 보상.골드;
                 let 최종골드 = Math.floor(보상.골드 * 발굴스킬보정());
                 if (최종골드 - 기존골드 > 0) {
-                    메시지표시(골드테두리안표시, "", `+${최종골드 - 기존골드}`, "#8000ff");
+                    메시지표시(골드테두리안표시, `${발굴아이콘}`, `+${최종골드 - 기존골드}`, "#8000ff");
 
                 }
 
@@ -2141,7 +2161,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 유저데이터.골드 += 보상.골드;
                 유저데이터.숙련도 += 보상.숙련도;
                 if (숙련도추가 > 0) {
-                    메시지표시(숙련도테두리안표시, "", `+${숙련도추가}`, "#80ff00");
+                    메시지표시(숙련도테두리안표시, `${인사이트아이콘}`, `+${숙련도추가}`, "#80ff00");
 
                 }
 
@@ -2181,7 +2201,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                     document.getElementById("레벨업표시").innerText =
                         (새레벨 > 이전레벨) ? "레벨업!" : "";
 
-                    죽음메시지보여주기(`${전투중몬스터이름} 처치!`);
+                    // 죽음메시지보여주기(`${전투중몬스터이름} 처치!`);
                     화면해제();
                 });
             }
@@ -2207,6 +2227,20 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
     <path d="m16.62 12-5.74 9.94"/>
 </svg>
 `;
+
+        const 크리티컬아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-axe-icon lucide-axe"><path d="m14 12-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9"/><path d="M15 13 9 7l4-4 6 6h3a8 8 0 0 1-7 7z"/></svg>`;
+        const 버서커아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-pulse-icon lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>`;
+        const 드레인아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet-icon lucide-droplet"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>`;
+        const 인사이트아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-diamond-plus-icon lucide-diamond-plus"><path d="M12 8v8"/><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41L13.7 2.71a2.41 2.41 0 0 0-3.41 0z"/><path d="M8 12h8"/></svg>`;
+        const 아이언바디아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-biceps-flexed-icon lucide-biceps-flexed"><path d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1"/><path d="M15 14a5 5 0 0 0-7.584 2"/><path d="M9.964 6.825C8.019 7.977 9.5 13 8 15"/></svg>`;
+        const 퀵니스아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history-icon lucide-history"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>`;
+        const 발굴아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gem-icon lucide-gem"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>`;
+        const 머니아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins-icon lucide-coins"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>`;
+        const 성공아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-party-popper-icon lucide-party-popper"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg>`;
+        const 실패아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ban-icon lucide-ban"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>`;
+        const 마스터아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap-icon lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>`;
+
+
 
         document.getElementById("위층으로").addEventListener("click", () => {
             if (유저데이터.현재층 >= 20) {
@@ -2556,16 +2590,16 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
         // ✅ 도박 시도 함수
         function 도박시도(등급, 비용) {
             if (Number(유저데이터.골드) < 비용) {
-                메시지표시(도박장, "", "골드가 부족합니다", "white")
+                메시지표시(도박장, `${머니아이콘}`, "골드가 부족합니다", "white")
                 return;
             }
             유저데이터.골드 -= 비용;
 
             if (Math.random() < 0.5) {
                 장비드랍시도(등급, "잭팟!");
-                메시지표시(도박장, "", `[${등급}] 등급 장비 도박 성공!`, "#00c851");
+                메시지표시(도박장, `${성공아이콘}`, `[${등급}] 등급 장비 도박 성공!`, "#00c851");
             } else {
-                메시지표시(도박장, "", "도박 실패..!", "#ef4444");
+                메시지표시(도박장, `${실패아이콘}`, "도박 실패..!", "#ef4444");
 
                 // 실패 로그 남기고 싶다면 ↓ 이것도 추가 가능
                 const 로그 = {
