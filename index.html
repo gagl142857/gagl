@@ -2616,11 +2616,13 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 };
                 db.ref("드랍로그").push(로그);
             }
-
-            db.ref("users/" + uid).update({ 골드: 유저데이터.골드 });
+            화면잠금();
+            db.ref("users/" + uid).update({ 골드: 유저데이터.골드 }).then(() => {
+                화면해제();
+                전투화면보여주기(유저데이터);
+            });
             const 창 = document.getElementById("도박창");
-            // if (창) 창.remove();
-            전투화면보여주기(유저데이터);
+
         }
 
 
