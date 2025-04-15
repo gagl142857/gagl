@@ -443,34 +443,6 @@
         </span>
     </div>
 
-    <!-- <div id="로딩화면" class="로딩컨테이너">
-        <div class="로딩스피너"></div>
-        <div style="margin-top: 10px;">로딩 중입니다...</div>
-    </div> -->
-    <!-- body 최상단 어디든 가능 -->
-    <div id="고정이펙트영역" style="
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  display: none;
-"></div>
-
-    <div id="드랍로그박스" class="기본테두리" style="
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 300px;
-  max-height: 800px;
-  overflow-y: auto;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 9999;
-"></div>
-
-
     <div class="밑줄" id="상단바">
         <div class="양쪽정렬 사백픽셀">
             <div class="커서호버" id="타이틀을아이디로">
@@ -700,8 +672,8 @@
 
     <div id="미니장비창" class="사백픽셀테두리" style="
     position: fixed;
-    top: 100px;
-    right: 30px;
+    top: 57px;
+    left: 300px;
     z-index: 9999;
     background: black;
     color: white;
@@ -710,32 +682,42 @@
     overflow-y: auto;
   "></div>
 
+
+    <!-- 드랍로그박스: 메시지 로그만 -->
+    <div id="드랍로그박스" class="기본테두리" style="
+  position: fixed;
+  bottom: 60px; /* 채팅창 위 공간 확보 */
+  right: 20px;
+  width: 300px;
+  max-height: 800px;
+  overflow-y: auto;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+"></div>
+
+    <!-- 채팅 입력창: 별도 분리해서 고정 -->
+    <input id="채팅입력" type="text" placeholder="메시지를 입력하세요" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    padding: 6px;
+    background: black;
+    color: white;
+    box-sizing: border-box; 
+    border-radius: 6px;
+    border: 1px solid white;
+    z-index: 9999;
+  " onkeydown="if(event.key==='Enter') 채팅보내기()">
+
     <!-- 객체추가 -->
 
 
     <script>
-        // // 콘솔 로그 출력용
-        // const 원래로그 = console.log;
-        // console.log = function (...args) {
-        //     원래로그(...args); // 기존 콘솔에 출력
-        //     const 콘솔로그창 = document.getElementById("콘솔로그창");
-        //     콘솔로그창.innerText = args.map(arg =>
-        //         typeof arg === "object" ? JSON.stringify(arg) : arg
-        //     ).join(" ");
-        //     콘솔로그창.style.display = "block";
-        // };
-
-        // // 에러 메시지 출력용
-        // window.onerror = function (message, source, lineno, colno, error) {
-        //     const 콘솔로그창 = document.getElementById("콘솔로그창");
-        //     콘솔로그창.innerText = `${message} (${lineno}:${colno})`;
-        //     콘솔로그창.style.display = "block";
-        //     return true;
-        // };
-
-
-
-
         const firebaseConfig = {
             apiKey: "AIzaSyATQ8ecSPS6StHUEv_-b-bw59qtjXoUzHc",
             authDomain: "gagl-eb32b.firebaseapp.com",
@@ -754,9 +736,22 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-13T18:19:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.0.9";
+        document.getElementById("버전표시").innerText = "v1.1.0";
 
+        function 채팅보내기() {
+            const 입력 = document.getElementById("채팅입력");
+            const 텍스트 = 입력.value.trim();
+            if (!텍스트) return;
 
+            const 메시지 = {
+                아이디: 유저데이터.아이디 || "익명",
+                내용: 텍스트,
+                시각: Date.now()
+            };
+
+            db.ref("채팅").push(메시지);
+            입력.value = "";
+        }
 
         let uid = "";
         let 유저데이터 = {};
@@ -787,7 +782,7 @@
             "Ξ. 바론"
         ];
 
-
+        // 색찾기
         const 색상맵 = {
             "일반": "#ffffff",
             "레어": "#00ff00",
@@ -1096,7 +1091,7 @@
                             남은체력: 10,
                             최대체력: 10,
                             경험치: 0,
-                            골드: 300000,
+                            골드: 400000,
                             // 버전업
                             숙련도: 0,
                             현재층: 1,
@@ -1348,7 +1343,7 @@
 
                     줄.innerHTML = `
   <div class="가로정렬">${왕관}</div>
-  <div>${유저.아이디} - 공격력 ${유저.공격력} / ${유저.현재층}층</div>
+  <div>${유저.아이디} (lv.${유저.레벨 || 1}) - 공격력 ${유저.공격력} / ${유저.현재층}층</div>
 `;
                     컨테이너.appendChild(줄);
 
@@ -1596,7 +1591,7 @@
                     단계: ["앵거 버서커", "레이지 버서커", "프렌지 버서커", "매드니스 버서커", "하울 버서커", "새비지 버서커", "블러드 버서커", "카오스 버서커"],
                     설명: ["체력-1, 최종데미지 1.4배", "체력-2, 최종데미지 1.8배", "체력-3, 최종데미지 2.2배", "체력-4, 최종데미지 2.6배", "체력-5, 최종데미지 3.0배", "체력-6, 최종데미지 3.4배", "체력-7, 최종데미지 3.8배", "체력-8, 최종데미지 4.2배"],
                     색상: Array(10).fill("#ff7f00"),
-                    아이콘: (색) => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${색}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-pulse-icon"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>`
+                    아이콘: (색) => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${색}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame-icon lucide-flame"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`
                 },
                 드레인: {
                     단계: ["기가 드레인", "테라 드레인", "페타 드레인", "엑사 드레인", "제타 드레인", "요타 드레인", "로나 드레인", "쿼카 드레인"],
@@ -1627,6 +1622,12 @@
                     설명: ["골드획득 1.2배", "골드획득 1.4배", "골드획득 1.6배", "골드획득 1.8배", "골드획득 2.0배"],
                     색상: Array(10).fill("#800080"),
                     아이콘: (색) => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${색}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gem-icon lucide-gem"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>`
+                },
+                버닝: {
+                    단계: ["인페르노 버닝", "플레임 버닝", "블레이징 버닝", "헬파이어 버닝", "피닉스 버닝"],
+                    설명: ["체력50%이하 데미지1.6배", "체력50%이하 데미지2.2배", "체력50%이하 데미지2.8배", "체력50%이하 데미지3.4배", "체력50%이하 데미지4.0배"],
+                    색상: Array(10).fill("#ff4000"),
+                    아이콘: (색) => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${색}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-battery-charging-icon lucide-battery-charging"><path d="M15 7h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/><path d="M6 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1"/><path d="m11 7-3 5h4l-3 5"/><line x1="22" x2="22" y1="11" y2="13"/></svg>`
                 }
             };
 
@@ -1985,7 +1986,6 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
         document.getElementById("탈퇴").addEventListener("click", function () {
             if (!uid) return alert("로그인이 되어 있지 않습니다.");
 
-
             if (confirm("정말 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.")) {
                 // 🔥 해당 uid 전체 데이터 완전 삭제
                 화면잠금();
@@ -1994,10 +1994,36 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                     화면해제();
                 });
             }
-
-
         });
 
+        function 버닝스킬보정() {
+            const 버닝스킬들 = [
+                { 이름: "인페르노 버닝", 배율: 1.6 },
+                { 이름: "플레임 버닝", 배율: 2.2 },
+                { 이름: "블레이징 버닝", 배율: 2.8 },
+                { 이름: "헬파이어 버닝", 배율: 3.4 },
+                { 이름: "피닉스 버닝", 배율: 4.0 },
+            ];
+            const 버닝레벨 = 유저데이터.스킬?.["버닝"] || 0;
+            const 현재HP = 유저데이터.남은체력;
+            const 최대HP = 유저데이터.최대체력;
+            if (현재HP > 최대HP * 0.5) return 1;
+
+            let 누적배율 = 0;
+
+            for (let i = 0; i < 버닝스킬들.length; i++) {
+                const 시작 = i * 10;
+                const 현재레벨 = Math.max(0, Math.min(버닝레벨 - 시작, 10));
+                if (현재레벨 <= 0) break;
+
+                const 확률 = 현재레벨 >= 10 ? 1 : 현재레벨 * 0.1;
+                if (Math.random() < 확률) {
+                    누적배율 += (버닝스킬들[i].배율 - 1);
+                } else break;
+            }
+
+            return 1 + 누적배율;
+        }
 
         function 공격하기() {
             if (현재악마체력 <= 0 || 유저데이터.남은체력 <= 0) {
@@ -2130,8 +2156,9 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
                 데미지 = Math.floor(데미지 * 버서커배율);
 
-                악마HP -= 데미지;
                 유저HP = Math.max(0, 유저HP - (1 + 추가체력소모));
+
+                악마HP -= 데미지;
             }
 
             전투결과 = (유저HP <= 0) ? "패배" : "승리";
@@ -2303,7 +2330,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 `;
 
         const 크리티컬아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-axe-icon lucide-axe"><path d="m14 12-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9"/><path d="M15 13 9 7l4-4 6 6h3a8 8 0 0 1-7 7z"/></svg>`;
-        const 버서커아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-pulse-icon lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>`;
+        const 버서커아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame-icon lucide-flame"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`;
         const 드레인아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplet-icon lucide-droplet"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>`;
         const 인사이트아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-diamond-plus-icon lucide-diamond-plus"><path d="M12 8v8"/><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41L13.7 2.71a2.41 2.41 0 0 0-3.41 0z"/><path d="M8 12h8"/></svg>`;
         const 아이언바디아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-biceps-flexed-icon lucide-biceps-flexed"><path d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1"/><path d="M15 14a5 5 0 0 0-7.584 2"/><path d="M9.964 6.825C8.019 7.977 9.5 13 8 15"/></svg>`;
@@ -2313,7 +2340,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
         const 성공아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-party-popper-icon lucide-party-popper"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg>`;
         const 실패아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ban-icon lucide-ban"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>`;
         const 마스터아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap-icon lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>`;
-
+        const 버닝아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-battery-charging-icon lucide-battery-charging"><path d="M15 7h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/><path d="M6 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1"/><path d="m11 7-3 5h4l-3 5"/><line x1="22" x2="22" y1="11" y2="13"/></svg>`;
 
 
         document.getElementById("위층으로").addEventListener("click", () => {
@@ -2366,21 +2393,81 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
         window.addEventListener("DOMContentLoaded", function () {
             document.getElementById("공격버튼").addEventListener("click", 공격하기);
 
-            db.ref("드랍로그").limitToLast(20).on("child_added", (snapshot) => {
-                const 로그 = snapshot.val();
+            const 박스 = document.getElementById("드랍로그박스");
+            const 통합로그 = [];
+            const 이미표시한시각 = new Set();
 
-                db.ref("users").orderByChild("아이디").equalTo(로그.아이디).once("value").then(userSnap => {
-                    let 허용 = true;
-                    if (!로그.아이디 || 로그.아이디.trim() === "") {
-                        허용 = false;
+            function 로그업데이트() {
+                통합로그.sort((a, b) => a.시각 - b.시각);
+                const 최근 = 통합로그.slice(-20);
+                박스.innerHTML = "";
+
+                for (const 항목 of 최근) {
+                    const 줄 = document.createElement("div");
+
+                    if (항목.종류 === "채팅") {
+                        줄.innerText = `[${항목.아이디}] ${항목.내용}`;
+                        줄.style.color = "#aaa";
+                        박스.appendChild(줄);
+                    } else if (항목.종류 === "드랍") {
+                        const 로그 = 항목;
+                        const 줄 = document.createElement("div");
+                        줄.innerText = 로그.로그 || `[${로그.아이디}] ${로그.이름} (공격력 +${로그.공격력}) 드랍!`;
+                        줄.style.color = 색상맵[로그.등급] || "white";
+                        박스.appendChild(줄);
                     }
+                }
+            }
+
+            // 🔹 초기 로딩
+            Promise.all([
+                db.ref("드랍로그").limitToLast(100).once("value"),
+                db.ref("채팅").limitToLast(100).once("value")
+            ]).then(([드랍스냅, 채팅스냅]) => {
+                드랍스냅.forEach(child => {
+                    const d = child.val();
+                    if (d.시각) 이미표시한시각.add(d.시각);
+                    통합로그.push({ ...d, 종류: "드랍" });
+                });
+
+                채팅스냅.forEach(child => {
+                    const c = child.val();
+                    if (c.시각) 이미표시한시각.add(c.시각);
+                    통합로그.push({ ...c, 종류: "채팅" });
+                });
+
+                로그업데이트();
+            });
+
+            // 🔹 실시간 채팅
+            db.ref("채팅").limitToLast(1).on("child_added", (snapshot) => {
+                const c = snapshot.val();
+                if (이미표시한시각.has(c.시각)) return;
+                이미표시한시각.add(c.시각);
+                통합로그.push({ ...c, 종류: "채팅" });
+                로그업데이트();
+            });
+
+            // 🔹 실시간 드랍로그
+            db.ref("드랍로그").limitToLast(1).on("child_added", (snapshot) => {
+                const d = snapshot.val();
+                if (이미표시한시각.has(d.시각)) return;
+                이미표시한시각.add(d.시각);
+
+                db.ref("users").orderByChild("아이디").equalTo(d.아이디).once("value").then(userSnap => {
+                    let 허용 = true;
+                    if (!d.아이디 || d.아이디.trim() === "") 허용 = false;
+
                     userSnap.forEach(child => {
                         const 유저 = child.val();
                         const 생성시각 = new Date(유저?.생성시각).getTime();
                         if (!isNaN(생성시각) && 생성시각 < 기준시각) 허용 = false;
                     });
 
-                    if (허용) 드랍로그추가(로그.아이디, 로그);
+                    if (허용) {
+                        통합로그.push({ ...d, 종류: "드랍" });
+                        로그업데이트();
+                    }
                 });
             });
         });
@@ -2422,22 +2509,22 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 버튼.innerText = "🛑 자동중지";
                 버튼.style.color = "red";
 
-                자동사냥타이머 = setInterval(() => {
+                const 반복 = () => {
                     if (!자동사냥중 || 유저데이터.남은체력 <= 0) return;
 
                     const 기본딜레이 = 1000;
                     const 딜레이보정 = 퀵니스딜레이보정();
                     const 실제딜레이 = Math.max(500, 기본딜레이 - 딜레이보정);
 
+                    if (실제딜레이 !== 1000) {
+                        메시지표시(자동사냥버튼, `${퀵니스아이콘}`, "", 색상맵["남"]);
+                    }
 
-                    clearInterval(자동사냥타이머); // 현재 딜레이로 다시 설정
                     공격하기();
+                    자동사냥타이머 = setTimeout(반복, 실제딜레이);
+                };
 
-                    자동사냥타이머 = setInterval(() => {
-                        if (!자동사냥중 || 유저데이터.남은체력 <= 0) return;
-                        공격하기();
-                    }, 실제딜레이);
-                }, 1000); // 첫 실행은 즉시
+                setTimeout(반복, 1000);
             } else {
                 자동사냥중지();
             }
@@ -2579,9 +2666,9 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
 패치노트<br>
-1. 공격스킬들의 화면효과가 추가되었습니다<br>
-2. 전당화면에서 다른 유저의 장착장비 조회<br>
-가능합니다. 아이디를 클릭해보세요<br>
+1. 버닝 스킬이 추가되었습니다<br>
+2. 전당화면에 레벨표시가 추가되었습니다<br>
+3. 채팅기능이 추가되었습니다. 수다를 떨어주세요<br>
 
     </div>
 `;
