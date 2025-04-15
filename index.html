@@ -741,7 +741,7 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.1";
+        document.getElementById("버전표시").innerText = "v1.1.2";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -949,12 +949,10 @@
                         const user = userCredential.user;
                         const uid = user.uid;
 
-                        // ✅ 세션토큰 갱신 (onAuthStateChanged 전에 기록)
-                        const 세션토큰 = crypto.randomUUID();
+                        const 세션토큰 = localStorage.getItem("세션토큰") || crypto.randomUUID();
                         localStorage.setItem("세션토큰", 세션토큰);
-
-                        // ✅ 세션토큰 서버에 기록
                         db.ref("users/" + uid).update({ 세션토큰 });
+
                     })
                     .catch(err => {
                         alert("로그인 실패: " + err.message);
@@ -1086,11 +1084,10 @@
                 }
 
                 uid = user.uid;
-                const 세션토큰 = crypto.randomUUID();
+                const 세션토큰 = localStorage.getItem("세션토큰") || crypto.randomUUID();
                 localStorage.setItem("세션토큰", 세션토큰);
-
-                // ✅ 세션토큰 저장 후 정확히 감시 시작
                 db.ref("users/" + uid).update({ 세션토큰 }).then(() => {
+
                     // 감시 루프는 2초 후 시작 (충분히 안정된 상태)
                     setTimeout(() => {
                         setInterval(() => {
@@ -2770,6 +2767,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 증가합니다<br>
 9. 필드 외 몬스터 전투에서 승리 시<br>
 해당 몬스터 등급의 아이템을 확정드랍합니다<br>
+10. 모든 팝업창은 바깥 클릭시 해제됩니다<br>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
 패치노트<br>
@@ -2778,6 +2776,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 3. 채팅기능이 추가되었습니다. 수다를 떨어주세요<br>
 4. 로그인 시스템이 변경되었습니다<br>
 기기간 호환이 가능해졌습니다<br>
+5. 자동로그아웃 버그가 해결되었습니다<br>
     </div>
 `;
         // 버전업
