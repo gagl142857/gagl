@@ -757,7 +757,7 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.5";
+        document.getElementById("버전표시").innerText = "v1.1.4";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -915,7 +915,6 @@
 
                         const 유저데이터 = {
                             아이디,
-                            이메일: 이메일형식,
                             생성시각: new Date().toISOString(),
                             레벨: 1,
                             공격력: 10,
@@ -1138,12 +1137,6 @@
                     }
 
                     const 데이터 = snapshot.val();
-
-
-                    // ✅ 이메일 필드가 없다면 로그인 이메일로 보정
-                    if (!데이터.이메일 && auth.currentUser.email) {
-                        db.ref("users/" + uid).update({ 이메일: auth.currentUser.email });
-                    }
                     const 생성시각 = Date.parse(데이터?.생성시각 || "");
                     if (!isNaN(생성시각) && 생성시각 < 기준시각) {
                         const 경고 = document.createElement("div");
@@ -1428,15 +1421,11 @@
                 snapshot.forEach((child) => {
                     const 데이터 = child.val();
 
-                    // ❌ 익명 로그인 유저 제외 (이메일 형식 아닌 경우)
-                    if (!데이터.이메일 || !데이터.이메일.includes("@")) return;
-
                     // 🔒 생성시각 필터
                     const 생성시각 = new Date(데이터.생성시각).getTime();
                     if (!isNaN(생성시각) && 생성시각 < 기준시각) return;
 
                     if (!데이터.아이디 || 데이터.아이디.trim() === "") return;
-
                     유저리스트.push(데이터);
                 });
 
@@ -1473,18 +1462,8 @@
                         db.ref("users").orderByChild("아이디").equalTo(유저.아이디).once("value").then(snapshot => {
                             snapshot.forEach(child => {
                                 const 대상데이터 = child.val();
-
-                                // 🔒 기준시각 이전이면 표시 안 함
-                                const 생성시각 = new Date(대상데이터.생성시각).getTime();
-                                if (!isNaN(생성시각) && 생성시각 < 기준시각) {
-                                    const 창 = document.getElementById("미니장비창");
-                                    창.style.display = "block";
-                                    창.innerHTML = "💥 메테오로 소멸된 유저입니다";
-                                    화면해제();
-                                    return;
-                                }
-
                                 const 장비들 = 대상데이터.장비목록 || [];
+
                                 const 창 = document.getElementById("미니장비창");
                                 창.style.display = "block";
                                 창.innerHTML = `<div style="font-weight:bold; margin-bottom:8px;">🔍 ${유저.아이디} 장비</div>`;
@@ -1515,6 +1494,7 @@
                             });
                         });
                     });
+
                 });
 
                 const 내랭킹인덱스 = 유저리스트.findIndex(u => u.아이디 === 유저데이터.아이디);
@@ -2533,10 +2513,11 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
         window.addEventListener("DOMContentLoaded", function () {
             document.getElementById("공격버튼").addEventListener("click", 공격하기);
 
-            const 드랍로그목록 = [];
-            const 채팅로그목록 = [];
+            const 박스 = document.getElementById("드랍로그박스");
+            const 통합로그 = [];
             const 이미표시한시각 = new Set();
 
+            // 기존 코드 안에서 로그업데이트 함수 수정
             function 로그업데이트() {
                 const 드랍박스 = document.getElementById("드랍로그박스");
                 const 채팅박스 = document.getElementById("채팅로그박스");
@@ -2544,36 +2525,38 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 드랍박스.innerHTML = "";
                 채팅박스.innerHTML = "";
 
-                드랍로그목록.slice(-20).forEach(항목 => {
-                    const 줄 = document.createElement("div");
-                    줄.innerText = 항목.로그 || `[${항목.아이디}] ${항목.이름} (공격력 +${항목.공격력}) 드랍!`;
-                    줄.style.color = 색상맵[항목.등급] || "white";
-                    드랍박스.appendChild(줄);
-                });
+                const 최근 = 통합로그.slice(-40);
 
-                채팅로그목록.slice(-20).forEach(항목 => {
+                for (const 항목 of 최근) {
                     const 줄 = document.createElement("div");
-                    줄.innerText = `[${항목.아이디}] ${항목.내용}`;
-                    줄.style.color = "#aaa";
-                    채팅박스.appendChild(줄);
-                });
+
+                    if (항목.종류 === "채팅") {
+                        줄.innerText = `[${항목.아이디}] ${항목.내용}`;
+                        줄.style.color = "#aaa";
+                        채팅박스.appendChild(줄);
+                    } else if (항목.종류 === "드랍") {
+                        줄.innerText = 항목.로그 || `[${항목.아이디}] ${항목.이름} (공격력 +${항목.공격력}) 드랍!`;
+                        줄.style.color = 색상맵[항목.등급] || "white";
+                        드랍박스.appendChild(줄);
+                    }
+                }
             }
 
             // 🔹 초기 로딩
             Promise.all([
-                db.ref("드랍로그").limitToLast(20).once("value"),
-                db.ref("채팅").limitToLast(20).once("value")
+                db.ref("드랍로그").limitToLast(100).once("value"),
+                db.ref("채팅").limitToLast(100).once("value")
             ]).then(([드랍스냅, 채팅스냅]) => {
                 드랍스냅.forEach(child => {
                     const d = child.val();
                     if (d.시각) 이미표시한시각.add(d.시각);
-                    드랍로그목록.push(d);
+                    통합로그.push({ ...d, 종류: "드랍" });
                 });
 
                 채팅스냅.forEach(child => {
                     const c = child.val();
                     if (c.시각) 이미표시한시각.add(c.시각);
-                    채팅로그목록.push(c);
+                    통합로그.push({ ...c, 종류: "채팅" });
                 });
 
                 로그업데이트();
@@ -2584,7 +2567,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 const c = snapshot.val();
                 if (이미표시한시각.has(c.시각)) return;
                 이미표시한시각.add(c.시각);
-                채팅로그목록.push(c);
+                통합로그.push({ ...c, 종류: "채팅" });
                 로그업데이트();
             });
 
@@ -2605,13 +2588,12 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                     });
 
                     if (허용) {
-                        드랍로그목록.push(d);
+                        통합로그.push({ ...d, 종류: "드랍" });
                         로그업데이트();
                     }
                 });
             });
         });
-
 
 
         function 죽음메시지보여주기(text) {
@@ -2812,7 +2794,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
 v1.1.4 패치노트<br>
-전당화면 버그 해결했습니다
+채팅창과 드랍로그창을 분리했습니다
     </div>
 `;
         // 버전업
