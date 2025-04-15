@@ -757,7 +757,7 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.6";
+        document.getElementById("버전표시").innerText = "v1.1.7";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -1595,7 +1595,7 @@
 
             const 기존강화 = 장비.강화 || 0; // 실패 대비 현재 강화 수치 저장
 
-            const 성공 = Math.random() < 0.5;
+            const 성공 = Math.random() < 0.51;
             if (성공) {
                 장비.강화 = 기존강화 + 1;
                 장비.공격력 += 강화공격력;
@@ -1935,65 +1935,74 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
             });
         }
 
-        // document.getElementById("타이틀을아이디로").addEventListener("click", () => {
-        //     const el = document.getElementById("타이틀을아이디로");
+        document.getElementById("타이틀을아이디로").addEventListener("click", () => {
+            const el = document.getElementById("타이틀을아이디로");
 
-        //     // 이미 인풋 상태면 중복 생성 방지
-        //     if (el.querySelector("input")) return;
+            if (el.querySelector("input")) return;
 
-        //     const 현재아이디 = 유저데이터.아이디 || "";
-        //     const input = document.createElement("input");
-        //     input.type = "text";
-        //     input.value = 현재아이디;
-        //     input.maxLength = 8;
-        //     input.style.width = "120px";
-        //     input.style.fontSize = "inherit";
+            const 현재아이디 = 유저데이터.아이디 || "";
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = 현재아이디;
+            input.maxLength = 8;
+            input.style.width = "120px";
+            input.style.fontSize = "inherit";
 
-        //     // 기존 텍스트 제거하고 input 삽입
-        //     el.innerHTML = "";
-        //     el.appendChild(input);
-        //     input.focus();
+            el.innerHTML = "";
+            el.appendChild(input);
+            input.focus();
 
-        //     // 엔터로 저장
-        //     input.addEventListener("keydown", (e) => {
-        //         if (e.key === "Enter") {
-        //             const 새아이디 = input.value.trim();
-        //             if (!새아이디) return 메시지표시(타이틀을아이디로, "", "아이디를 입력해주세요.", "white");
+            input.addEventListener("keydown", async (e) => {
+                if (e.key === "Enter") {
+                    const 새아이디 = input.value.trim();
+                    if (!새아이디) return 메시지표시(el, "", "아이디를 입력해주세요.", "white");
 
-        //             화면잠금();
+                    화면잠금();
+                    const snapshot = await db.ref("users").orderByChild("아이디").equalTo(새아이디).once("value");
+                    const 이미존재 = snapshot.exists() && 새아이디 !== 현재아이디;
+                    if (이미존재) {
+                        화면해제();
+                        메시지표시(el, "", "이미 존재하는 아이디입니다.", "white");
+                        input.focus();
+                        return;
+                    }
 
-        //             db.ref("users").orderByChild("아이디").equalTo(새아이디).once("value", (snapshot) => {
-        //                 const 이미존재 = snapshot.exists() && 새아이디 !== 현재아이디;
+                    const 새이메일 = `${새아이디}@gagl.com`;
+                    const 비번 = prompt("현재 비밀번호를 입력하세요");
+                    if (!비번) {
+                        화면해제();
+                        el.innerText = 현재아이디;
+                        return;
+                    }
 
-        //                 if (이미존재) {
-        //                     화면해제();
-        //                     메시지표시(타이틀을아이디로, "", "이미 존재하는 아이디입니다. 다른 이름을 입력해주세요.", "white")
-        //                     input.focus();
-        //                     return;
-        //                 }
+                    const user = auth.currentUser;
+                    const credential = firebase.auth.EmailAuthProvider.credential(user.email, 비번);
 
-        //                 // 저장 진행
-        //                 유저데이터.아이디 = 새아이디;
-        //                 db.ref("users/" + uid).set(유저데이터).then(() => {
-        //                     el.innerText = 새아이디;
-        //                     document.getElementById("타이틀을아이디로").innerText = 새아이디;
-        //                     document.getElementById("유저아이디").innerText = 새아이디;
-        //                     화면해제();
-        //                 });
-        //             });
-        //         }
+                    user.reauthenticateWithCredential(credential)
+                        .then(() => user.updateEmail(새이메일))
+                        .then(() => {
+                            유저데이터.아이디 = 새아이디;
+                            return db.ref("users/" + uid).set(유저데이터);
+                        })
+                        .then(() => {
+                            el.innerText = 새아이디;
+                            document.getElementById("유저아이디").innerText = 새아이디;
+                            화면해제();
+                        })
+                        .catch((err) => {
+                            화면해제();
+                            메시지표시(el, "", "변경 실패: " + err.message, "red");
+                            el.innerText = 현재아이디;
+                        });
+                }
 
-        //         // Esc 누르면 취소
-        //         if (e.key === "Escape") {
-        //             el.innerText = 현재아이디;
-        //         }
-        //     });
+                if (e.key === "Escape") el.innerText = 현재아이디;
+            });
 
-        //     // 포커스 벗어나면 원래대로 (변경 취소)
-        //     input.addEventListener("blur", () => {
-        //         el.innerText = 현재아이디;
-        //     });
-        // });
+            input.addEventListener("blur", () => {
+                el.innerText = 현재아이디;
+            });
+        });
 
 
         const 악마리스트 = [
@@ -2778,12 +2787,13 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 3. 스킬화면에 총보유숙련도를 클릭하시면<br>
 지금까지 투자된 모든 숙련도가 회수됩니다<br>
 4. 아이디를 클릭하시면 아이디 변경이 가능합니다<br>
-☆죄송합니다 닉넴변경 잠시 막아뒀습니다☆
 5. 층 옆의 화살표로 층 이동이 가능합니다<br>
 6. 도박이나 드랍으로 획득한 장비의 공격력은<br>
 전부 누적되어 공격력에 합산됩니다<br>
 7. 추가로 합성되어지는 아이템은(0)표시가 되고<br>
 합성 보너스로 최대체력이 1 증가합니다<br>
+7-1. 장비화면에 망치는 강화버튼입니다<br>
+일반등급과 레어등급 장비는 강화 효율이 더 좋습니다<br>
 8. 층수가 오를수록 필드 외 몬스터의 등장확률이<br>
 증가합니다<br>
 9. 필드 외 몬스터 전투에서 승리 시<br>
@@ -2792,8 +2802,8 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
 v1.1.4 패치노트<br>
-강화비용을 조정했습니다<br>
-이제 강화도 해보세요<br>
+1. 아이디를 클릭하시면 아이디 변경이 가능합니다<br>
+로그인 아이디도 변경이니 로그인 시 참고하세요<br>
     </div>
 `;
         // 버전업
@@ -2893,7 +2903,7 @@ v1.1.4 패치노트<br>
             }
             유저데이터.골드 -= 비용;
 
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.51) {
                 장비드랍시도(등급, "잭팟!");
                 메시지표시(도박장, `${성공아이콘}`, `[${등급}] 등급 장비 도박 성공!`, "#00c851");
             } else {
