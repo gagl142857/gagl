@@ -757,7 +757,7 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.4";
+        document.getElementById("버전표시").innerText = "v1.1.5";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -915,6 +915,7 @@
 
                         const 유저데이터 = {
                             아이디,
+                            이메일: 이메일형식,
                             생성시각: new Date().toISOString(),
                             레벨: 1,
                             공격력: 10,
@@ -1137,6 +1138,12 @@
                     }
 
                     const 데이터 = snapshot.val();
+
+
+                    // ✅ 이메일 필드가 없다면 로그인 이메일로 보정
+                    if (!데이터.이메일 && auth.currentUser.email) {
+                        db.ref("users/" + uid).update({ 이메일: auth.currentUser.email });
+                    }
                     const 생성시각 = Date.parse(데이터?.생성시각 || "");
                     if (!isNaN(생성시각) && 생성시각 < 기준시각) {
                         const 경고 = document.createElement("div");
@@ -1421,11 +1428,15 @@
                 snapshot.forEach((child) => {
                     const 데이터 = child.val();
 
+                    // ❌ 익명 로그인 유저 제외 (이메일 형식 아닌 경우)
+                    if (!데이터.이메일 || !데이터.이메일.includes("@")) return;
+
                     // 🔒 생성시각 필터
                     const 생성시각 = new Date(데이터.생성시각).getTime();
                     if (!isNaN(생성시각) && 생성시각 < 기준시각) return;
 
                     if (!데이터.아이디 || 데이터.아이디.trim() === "") return;
+
                     유저리스트.push(데이터);
                 });
 
@@ -1462,8 +1473,18 @@
                         db.ref("users").orderByChild("아이디").equalTo(유저.아이디).once("value").then(snapshot => {
                             snapshot.forEach(child => {
                                 const 대상데이터 = child.val();
-                                const 장비들 = 대상데이터.장비목록 || [];
 
+                                // 🔒 기준시각 이전이면 표시 안 함
+                                const 생성시각 = new Date(대상데이터.생성시각).getTime();
+                                if (!isNaN(생성시각) && 생성시각 < 기준시각) {
+                                    const 창 = document.getElementById("미니장비창");
+                                    창.style.display = "block";
+                                    창.innerHTML = "💥 메테오로 소멸된 유저입니다";
+                                    화면해제();
+                                    return;
+                                }
+
+                                const 장비들 = 대상데이터.장비목록 || [];
                                 const 창 = document.getElementById("미니장비창");
                                 창.style.display = "block";
                                 창.innerHTML = `<div style="font-weight:bold; margin-bottom:8px;">🔍 ${유저.아이디} 장비</div>`;
@@ -1494,7 +1515,6 @@
                             });
                         });
                     });
-
                 });
 
                 const 내랭킹인덱스 = 유저리스트.findIndex(u => u.아이디 === 유저데이터.아이디);
@@ -2792,7 +2812,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
 v1.1.4 패치노트<br>
-채팅창과 드랍로그창을 분리했습니다
+전당화면 버그 해결했습니다
     </div>
 `;
         // 버전업
