@@ -465,6 +465,9 @@
                     <div class="버튼" id="탈퇴">
                         탈퇴
                     </div>
+                    <div class="버튼" id="로그아웃">
+                        로그아웃
+                    </div>
                 </div>
             </div>
         </div>
@@ -494,17 +497,19 @@
 
 
 
-    <div id="로그인화면" style="display: none;">
-
+    <div id="로그인화면">
         <div class="사백픽셀테두리 세로정렬" id="로그인창">
-            <input type="text" placeholder="아이디을 입력하세요" id="아이디입력" autocomplete="off" maxlength="8">
-            <button onclick="아이디설정()">확인</button>
-            <div>
-                주의. 기기간, 브라우저간 계정 연동되지 않습니다
+            <input type="text" placeholder="아이디 (최대 8자)" id="이메일입력" autocomplete="off" maxlength="8">
+            <input type="password" placeholder="비밀번호 (최소 6자)" id="비번입력" autocomplete="off">
+            <div class="가로정렬">
+                <div class="버튼" onclick="회원가입()">회원가입</div>
+                <div class="버튼" onclick="로그인()">로그인</div>
+            </div>
+            <div style="font-size: 12px; color: #888;">
+                주의. 아이디와 비밀번호는 반드시 기억해주세요
             </div>
         </div>
     </div>
-
 
 
 
@@ -734,9 +739,9 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const 기준시각 = new Date("2025-04-13T18:19:00+09:00").getTime();
+        const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.0";
+        document.getElementById("버전표시").innerText = "v1.1.1";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -869,6 +874,85 @@
         //     공허: 1   // 100%
         // };
 
+        function 회원가입() {
+            const 아이디 = document.getElementById("이메일입력").value.trim();
+            const 비번 = document.getElementById("비번입력").value.trim();
+            if (!아이디 || !비번) return alert("아이디와 비밀번호를 입력하세요");
+            if (비번.length < 6) return alert("비밀번호는 6자 이상이어야 합니다");
+
+            const 이메일형식 = `${아이디}@gagl.com`;
+            const 탈퇴키 = 이메일형식.replace(/\./g, "_");
+
+            db.ref("탈퇴이메일/" + 탈퇴키).once("value").then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("이 아이디는 탈퇴되어 다시 가입할 수 없습니다.");
+                    return;
+                }
+
+                // ✅ 실제 회원가입
+                auth.createUserWithEmailAndPassword(이메일형식, 비번)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        const uid = user.uid;
+
+                        const 세션토큰 = crypto.randomUUID();
+                        localStorage.setItem("세션토큰", 세션토큰);
+                        db.ref("users/" + uid).update({ 세션토큰 });
+
+                        // ✅ 유저데이터 저장
+                        const 유저데이터 = {
+                            아이디,
+                            생성시각: new Date().toISOString(),
+                            레벨: 1,
+                            공격력: 10,
+                            남은체력: 10,
+                            최대체력: 10,
+                            경험치: 0,
+                            골드: 400000,
+                            숙련도: 0,
+                            현재층: 1,
+                            현재악마번호: 1,
+                            스킬: {},
+                            조우기록: { 레어: 0, 신화: 0, 고대: 0, 태초: 0, 공허: 0 },
+                            합성기록: {},
+                            장비목록: [],
+                            강림몬스터: null
+                        };
+
+                        db.ref("users/" + uid).set(유저데이터).then(() => {
+                            전투화면보여주기(유저데이터);
+                            화면해제();
+                        });
+                    })
+                    .catch(err => {
+                        alert("회원가입 실패: " + err.message);
+                    });
+            });
+        }
+        function 로그인() {
+            const 아이디 = document.getElementById("이메일입력").value.trim();
+            const 비번 = document.getElementById("비번입력").value.trim();
+            if (!아이디 || !비번) return alert("아이디와 비밀번호를 입력하세요");
+
+            const 이메일형식 = `${아이디}@gagl.com`;
+            const 탈퇴키 = 이메일형식.replace(/\./g, "_");
+
+            // ✅ 로그인 전에 탈퇴 계정 확인
+            db.ref("탈퇴이메일/" + 탈퇴키).once("value").then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("이 아이디는 탈퇴되어 로그인할 수 없습니다.");
+                    return;
+                }
+
+                // ✅ 실제 로그인
+                auth.signInWithEmailAndPassword(이메일형식, 비번)
+                    .then(() => { })
+                    .catch(err => {
+                        alert("로그인 실패: " + err.message);
+                    });
+            });
+        }
+
 
 
         function 장비드랍시도(등급, 출처 = "") {
@@ -906,10 +990,10 @@
             let 기본공격력 = 0;
             if (등급 === "일반") 기본공격력 = 10;
             else if (등급 === "레어") 기본공격력 = 100;
-            else if (등급 === "신화") 기본공격력 = 1000;
-            else if (등급 === "고대") 기본공격력 = 10000;
-            else if (등급 === "태초") 기본공격력 = 100000;
-            else if (등급 === "공허") 기본공격력 = 1000000;
+            else if (등급 === "신화") 기본공격력 = 900;
+            else if (등급 === "고대") 기본공격력 = 7200;
+            else if (등급 === "태초") 기본공격력 = 50400;
+            else if (등급 === "공허") 기본공격력 = 302400;
 
             const 오차범위 = 기본공격력 * 0.2;
             const 공격력 = Math.floor(기본공격력 + (Math.random() * 2 - 1) * 오차범위);
@@ -987,134 +1071,130 @@
 
         auth.onAuthStateChanged(function (user) {
             if (user) {
+                if (user.isAnonymous) {
+                    user.delete().then(() => {
+                        로그인화면보여주기();
+                    });
+                    return;
+                }
+
                 uid = user.uid;
 
-                화면잠금();
-                db.ref("users/" + uid).once("value").then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const 데이터 = snapshot.val();
-                        const 생성시각 = Date.parse(데이터?.생성시각 || "");
-                        if (!isNaN(생성시각) && 생성시각 < 기준시각) {
-                            const 경고 = document.createElement("div");
-                            경고.innerHTML = `
-                        <div style="
-                            position: fixed;
-                            top: 0; left: 0; right: 0; bottom: 0;
-                            background: black;
-                            color: red;
-                            font-size: 18px;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: center;
-                            align-items: center;
-                            z-index: 99999;
-                            animation: 깜빡임 1s infinite;
-                        ">
-                            <div style="margin-bottom: 20px; text-align: center;">
-                                <p>🌑 하늘이 어두워지고...</p>
-                                <p>☄️ 운석이 다가옵니다...</p>
-                                <p style="font-size: 24px; font-weight: bold; color: orange;">💥 메테오 작렬!</p>
-                            </div>
-                            <button id="확인버튼" style="
-                                padding: 10px 20px;
-                                font-size: 16px;
-                                background: red;
-                                color: white;
-                                border: none;
-                                border-radius: 8px;
-                                cursor: pointer;
-                            ">확인</button>
-                        </div>
-                        <style>
-                        @keyframes 깜빡임 {
-                            0% { background-color: black; }
-                            50% { background-color: darkred; }
-                            100% { background-color: black; }
-                        }
-                        </style>
-                    `;
-                            document.body.appendChild(경고);
+                const 세션토큰 = crypto.randomUUID();
+                localStorage.setItem("세션토큰", 세션토큰);
 
-                            document.getElementById("확인버튼").addEventListener("click", () => {
-                                db.ref("users/" + uid).remove().then(() => {
-                                    location.reload(); // 로그인화면으로
-                                    화면해제();
+                // ✅ 세션토큰 저장이 끝난 후 감시 시작
+                db.ref("users/" + uid).update({ 세션토큰 }).then(() => {
+                    setInterval(() => {
+                        const 내토큰 = localStorage.getItem("세션토큰");
+                        db.ref("users/" + uid + "/세션토큰").once("value").then(snapshot => {
+                            const 서버토큰 = snapshot.val();
+                            if (!내토큰 || 내토큰 !== 서버토큰) {
+                                alert("다른 브라우저에서 로그인되었습니다. 이 브라우저는 로그아웃됩니다.");
+                                auth.signOut().then(() => {
+                                    localStorage.removeItem("세션토큰");
+                                    location.reload();
                                 });
-                            });
-                            return;
-                        }
-
-                        if (데이터.아이디 && 데이터.아이디.trim() !== "") {
-                            유저데이터 = 데이터;
-
-                            유저데이터 = {
-                                ...데이터,
-                                조우기록: 데이터.조우기록 || {},
-                                스킬: 데이터.스킬 || {},
-                                장비목록: 데이터.장비목록 || [],
-                                합성기록: 데이터.합성기록 || {},
-                                최대체력: 데이터.최대체력 || 100,
-                                강림몬스터: 데이터.강림몬스터 || null
-                            };
-
-                            // ✅ 조우기록 필드 강제 초기화
-                            if (!유저데이터.조우기록) 유저데이터.조우기록 = {};
-                            if (!("레어" in 유저데이터.조우기록)) 유저데이터.조우기록.레어 = 0;
-                            if (!("신화" in 유저데이터.조우기록)) 유저데이터.조우기록.신화 = 0;
-                            if (!("고대" in 유저데이터.조우기록)) 유저데이터.조우기록.고대 = 0;
-                            if (!("태초" in 유저데이터.조우기록)) 유저데이터.조우기록.태초 = 0;
-                            if (!("공허" in 유저데이터.조우기록)) 유저데이터.조우기록.공허 = 0;
-                            if (!유저데이터.최대체력) 유저데이터.최대체력 = 100;
-                            if (!유저데이터.스킬) 유저데이터.스킬 = {};
-                            if (!유저데이터.장비목록) 유저데이터.장비목록 = [];
-                            if (!유저데이터.강림몬스터) 유저데이터.강림몬스터 = null;
+                            }
+                        });
+                    }, 3000);
+                });
 
 
+                화면잠금();
 
-                            if (!유저데이터.합성기록) 유저데이터.합성기록 = {};
-
-
-                            전투화면보여주기(유저데이터);
-                            화면해제();
-                        } else {
-                            유저데이터 = 데이터;
-                            로그인화면보여주기();
-                            화면해제();
-                        }
-                    } else {
-                        // 신규 유저 생성
-                        유저데이터 = {
-                            아이디: "",
-                            생성시각: new Date().toISOString(),
-                            레벨: 1,
-                            공격력: 10,
-                            남은체력: 10,
-                            최대체력: 10,
-                            경험치: 0,
-                            골드: 400000,
-                            // 버전업
-                            숙련도: 0,
-                            현재층: 1,
-                            현재악마번호: 1,
-                            스킬: {},
-                            조우기록: { 레어: 0, 신화: 0, 고대: 0, 태초: 0, 공허: 0 },
-                            합성기록: {},
-                            장비목록: []
-                        };
-
-
-                        db.ref("users/" + uid).set(유저데이터).then(() => {
+                db.ref("users/" + uid).once("value").then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        // ✅ 유저 데이터 없으면 로그아웃 후 로그인화면 이동
+                        auth.signOut().then(() => {
+                            localStorage.removeItem("세션토큰");
                             로그인화면보여주기();
                             화면해제();
                         });
+                        return;
                     }
+
+                    const 데이터 = snapshot.val();
+                    const 생성시각 = Date.parse(데이터?.생성시각 || "");
+                    if (!isNaN(생성시각) && 생성시각 < 기준시각) {
+                        const 경고 = document.createElement("div");
+                        경고.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 0; left: 0; right: 0; bottom: 0;
+                        background: black;
+                        color: red;
+                        font-size: 18px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 99999;
+                        animation: 깜빡임 1s infinite;
+                    ">
+                        <div style="margin-bottom: 20px; text-align: center;">
+                            <p>🌑 하늘이 어두워지고...</p>
+                            <p>☄️ 운석이 다가옵니다...</p>
+                            <p style="font-size: 24px; font-weight: bold; color: orange;">💥 메테오 작렬!</p>
+                        </div>
+                        <button id="확인버튼" style="
+                            padding: 10px 20px;
+                            font-size: 16px;
+                            background: red;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        ">확인</button>
+                    </div>
+                    <style>
+                    @keyframes 깜빡임 {
+                        0% { background-color: black; }
+                        50% { background-color: darkred; }
+                        100% { background-color: black; }
+                    }
+                    </style>
+                `;
+                        document.body.appendChild(경고);
+
+                        document.getElementById("확인버튼").addEventListener("click", () => {
+                            db.ref("users/" + uid).remove().then(() => {
+                                user.delete().then(() => {
+                                    location.reload();
+                                    화면해제();
+                                });
+                            });
+                        });
+                        return;
+                    }
+
+                    // ✅ 유저 데이터 정상 로딩
+                    유저데이터 = {
+                        ...데이터,
+                        조우기록: 데이터.조우기록 || {},
+                        스킬: 데이터.스킬 || {},
+                        장비목록: 데이터.장비목록 || [],
+                        합성기록: 데이터.합성기록 || {},
+                        최대체력: 데이터.최대체력 || 100,
+                        강림몬스터: 데이터.강림몬스터 || null
+                    };
+
+                    if (!("레어" in 유저데이터.조우기록)) 유저데이터.조우기록.레어 = 0;
+                    if (!("신화" in 유저데이터.조우기록)) 유저데이터.조우기록.신화 = 0;
+                    if (!("고대" in 유저데이터.조우기록)) 유저데이터.조우기록.고대 = 0;
+                    if (!("태초" in 유저데이터.조우기록)) 유저데이터.조우기록.태초 = 0;
+                    if (!("공허" in 유저데이터.조우기록)) 유저데이터.조우기록.공허 = 0;
+
+                    전투화면보여주기(유저데이터);
+                    화면해제();
                 });
 
             } else {
-                // 익명 로그인
-                auth.signInAnonymously();
+                로그인화면보여주기(); // 로그인 안 된 경우 로그인창 표시
             }
         });
+
+
 
         function 화면잠금() {
             document.getElementById("블로커").style.display = "block";
@@ -1125,14 +1205,20 @@
         }
 
         function 로그인화면보여주기() {
-            // document.getElementById("로딩화면").style.display = "none";
             document.getElementById("전투스킬설정버튼").style.display = "none";
             document.getElementById("에너지박스").style.display = "none";
             document.getElementById("전투화면").style.display = "none";
+            document.getElementById("전당화면").style.display = "none";
+            document.getElementById("스킬화면").style.display = "none";
+            document.getElementById("장비화면").style.display = "none";
+            document.getElementById("드랍로그박스").style.display = "none";
+            document.getElementById("채팅입력").style.display = "none";
+
             document.getElementById("로그인화면").style.display = "block";
             document.getElementById("획득로그").innerText = "";
             document.getElementById("레벨업표시").innerText = "";
         }
+
 
         function 전투화면보여주기(유저) {
             document.getElementById("로그인화면").style.display = "none";
@@ -1142,6 +1228,8 @@
             document.getElementById("전투스킬설정버튼").style.display = "block";
             document.getElementById("에너지박스").style.display = "block";
             document.getElementById("전투화면").style.display = "block";
+            document.getElementById("드랍로그박스").style.display = "block";
+            document.getElementById("채팅입력").style.display = "block";
 
             document.getElementById("유저아이디").innerText = 유저데이터.아이디 || "gagl";
             document.getElementById("타이틀을아이디로").innerText = 유저데이터.아이디 || "gagl";
@@ -1474,8 +1562,8 @@
             const 장비 = 유저데이터.장비목록.find(z => z.이름 === 이름 && z.등급 === 등급);
             if (!장비) return;
 
-            const 강화비용 = { 일반: 24000, 레어: 100000, 신화: 1000000, 고대: 10000000, 태초: 100000000, 공허: 1000000000 }[등급];
-            const 강화공격력 = { 일반: 10, 레어: 100, 신화: 1000, 고대: 10000, 태초: 100000, 공허: 1000000 }[등급];
+            const 강화비용 = { 일반: 10000, 레어: 100000, 신화: 800000, 고대: 4800000, 태초: 19200000, 공허: 38400000 }[등급];
+            const 강화공격력 = { 일반: 3, 레어: 30, 신화: 180, 고대: 1440, 태초: 5040, 공허: 30240 }[등급];
 
             if (유저데이터.골드 < 강화비용) return 메시지표시(장비화면, `${머니아이콘}`, `${강화비용.toLocaleString()}Gold가 필요합니다.`, "#cd4b25");
 
@@ -1825,65 +1913,65 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
             });
         }
 
-        document.getElementById("타이틀을아이디로").addEventListener("click", () => {
-            const el = document.getElementById("타이틀을아이디로");
+        // document.getElementById("타이틀을아이디로").addEventListener("click", () => {
+        //     const el = document.getElementById("타이틀을아이디로");
 
-            // 이미 인풋 상태면 중복 생성 방지
-            if (el.querySelector("input")) return;
+        //     // 이미 인풋 상태면 중복 생성 방지
+        //     if (el.querySelector("input")) return;
 
-            const 현재아이디 = 유저데이터.아이디 || "";
-            const input = document.createElement("input");
-            input.type = "text";
-            input.value = 현재아이디;
-            input.maxLength = 8;
-            input.style.width = "120px";
-            input.style.fontSize = "inherit";
+        //     const 현재아이디 = 유저데이터.아이디 || "";
+        //     const input = document.createElement("input");
+        //     input.type = "text";
+        //     input.value = 현재아이디;
+        //     input.maxLength = 8;
+        //     input.style.width = "120px";
+        //     input.style.fontSize = "inherit";
 
-            // 기존 텍스트 제거하고 input 삽입
-            el.innerHTML = "";
-            el.appendChild(input);
-            input.focus();
+        //     // 기존 텍스트 제거하고 input 삽입
+        //     el.innerHTML = "";
+        //     el.appendChild(input);
+        //     input.focus();
 
-            // 엔터로 저장
-            input.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") {
-                    const 새아이디 = input.value.trim();
-                    if (!새아이디) return 메시지표시(타이틀을아이디로, "", "아이디를 입력해주세요.", "white");
+        //     // 엔터로 저장
+        //     input.addEventListener("keydown", (e) => {
+        //         if (e.key === "Enter") {
+        //             const 새아이디 = input.value.trim();
+        //             if (!새아이디) return 메시지표시(타이틀을아이디로, "", "아이디를 입력해주세요.", "white");
 
-                    화면잠금();
+        //             화면잠금();
 
-                    db.ref("users").orderByChild("아이디").equalTo(새아이디).once("value", (snapshot) => {
-                        const 이미존재 = snapshot.exists() && 새아이디 !== 현재아이디;
+        //             db.ref("users").orderByChild("아이디").equalTo(새아이디).once("value", (snapshot) => {
+        //                 const 이미존재 = snapshot.exists() && 새아이디 !== 현재아이디;
 
-                        if (이미존재) {
-                            화면해제();
-                            메시지표시(타이틀을아이디로, "", "이미 존재하는 아이디입니다. 다른 이름을 입력해주세요.", "white")
-                            input.focus();
-                            return;
-                        }
+        //                 if (이미존재) {
+        //                     화면해제();
+        //                     메시지표시(타이틀을아이디로, "", "이미 존재하는 아이디입니다. 다른 이름을 입력해주세요.", "white")
+        //                     input.focus();
+        //                     return;
+        //                 }
 
-                        // 저장 진행
-                        유저데이터.아이디 = 새아이디;
-                        db.ref("users/" + uid).set(유저데이터).then(() => {
-                            el.innerText = 새아이디;
-                            document.getElementById("타이틀을아이디로").innerText = 새아이디;
-                            document.getElementById("유저아이디").innerText = 새아이디;
-                            화면해제();
-                        });
-                    });
-                }
+        //                 // 저장 진행
+        //                 유저데이터.아이디 = 새아이디;
+        //                 db.ref("users/" + uid).set(유저데이터).then(() => {
+        //                     el.innerText = 새아이디;
+        //                     document.getElementById("타이틀을아이디로").innerText = 새아이디;
+        //                     document.getElementById("유저아이디").innerText = 새아이디;
+        //                     화면해제();
+        //                 });
+        //             });
+        //         }
 
-                // Esc 누르면 취소
-                if (e.key === "Escape") {
-                    el.innerText = 현재아이디;
-                }
-            });
+        //         // Esc 누르면 취소
+        //         if (e.key === "Escape") {
+        //             el.innerText = 현재아이디;
+        //         }
+        //     });
 
-            // 포커스 벗어나면 원래대로 (변경 취소)
-            input.addEventListener("blur", () => {
-                el.innerText = 현재아이디;
-            });
-        });
+        //     // 포커스 벗어나면 원래대로 (변경 취소)
+        //     input.addEventListener("blur", () => {
+        //         el.innerText = 현재아이디;
+        //     });
+        // });
 
 
         const 악마리스트 = [
@@ -1987,11 +2075,21 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
             if (!uid) return alert("로그인이 되어 있지 않습니다.");
 
             if (confirm("정말 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.")) {
-                // 🔥 해당 uid 전체 데이터 완전 삭제
-                화면잠금();
+                화면잠금(); // ✅ 탈퇴 중 화면 차단
+
+                const 이메일 = auth.currentUser.email;
+                const 탈퇴키 = 이메일.replace(/\./g, "_");
+
                 db.ref("users/" + uid).remove().then(() => {
-                    location.reload(); // 새로고침해서 다시 익명 로그인부터
-                    화면해제();
+                    db.ref("탈퇴이메일/" + 탈퇴키).set(true).then(() => {
+                        auth.currentUser.delete().then(() => {
+                            auth.signOut().then(() => {
+                                localStorage.removeItem("세션토큰");
+                                화면해제(); // ✅ 완전 종료 후 해제
+                                location.reload();
+                            });
+                        });
+                    });
                 });
             }
         });
@@ -2669,7 +2767,8 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 1. 버닝 스킬이 추가되었습니다<br>
 2. 전당화면에 레벨표시가 추가되었습니다<br>
 3. 채팅기능이 추가되었습니다. 수다를 떨어주세요<br>
-
+4. 로그인 시스템이 변경되었습니다<br>
+기기간 호환이 가능해졌습니다<br>
     </div>
 `;
         // 버전업
@@ -2794,6 +2893,18 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
             const 창 = document.getElementById("도박창");
 
         }
+
+
+        document.getElementById("로그아웃").addEventListener("click", () => {
+            auth.signOut().then(() => {
+                localStorage.removeItem("세션토큰");
+                location.reload();
+            });
+        });
+
+
+
+
 
 
         // 스크립트추가
