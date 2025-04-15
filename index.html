@@ -889,7 +889,6 @@
                     return;
                 }
 
-                // ✅ 실제 회원가입
                 auth.createUserWithEmailAndPassword(이메일형식, 비번)
                     .then((userCredential) => {
                         const user = userCredential.user;
@@ -897,9 +896,7 @@
 
                         const 세션토큰 = crypto.randomUUID();
                         localStorage.setItem("세션토큰", 세션토큰);
-                        db.ref("users/" + uid).update({ 세션토큰 });
 
-                        // ✅ 유저데이터 저장
                         const 유저데이터 = {
                             아이디,
                             생성시각: new Date().toISOString(),
@@ -919,16 +916,18 @@
                             강림몬스터: null
                         };
 
+                        // ✅ 유저데이터 먼저 저장
                         db.ref("users/" + uid).set(유저데이터).then(() => {
+                            // ✅ 그 후 세션토큰 따로 덮어쓰기
+                            db.ref("users/" + uid).update({ 세션토큰 });
                             전투화면보여주기(유저데이터);
                             화면해제();
                         });
                     })
-                    .catch(err => {
-                        alert("회원가입 실패: " + err.message);
-                    });
             });
         }
+
+
         function 로그인() {
             const 아이디 = document.getElementById("이메일입력").value.trim();
             const 비번 = document.getElementById("비번입력").value.trim();
@@ -937,16 +936,26 @@
             const 이메일형식 = `${아이디}@gagl.com`;
             const 탈퇴키 = 이메일형식.replace(/\./g, "_");
 
-            // ✅ 로그인 전에 탈퇴 계정 확인
+            // ✅ 로그인 전에 탈퇴된 이메일인지 확인
             db.ref("탈퇴이메일/" + 탈퇴키).once("value").then((snapshot) => {
                 if (snapshot.exists()) {
                     alert("이 아이디는 탈퇴되어 로그인할 수 없습니다.");
                     return;
                 }
 
-                // ✅ 실제 로그인
+                // ✅ 실제 로그인 시도
                 auth.signInWithEmailAndPassword(이메일형식, 비번)
-                    .then(() => { })
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        const uid = user.uid;
+
+                        // ✅ 세션토큰 갱신 (onAuthStateChanged 전에 기록)
+                        const 세션토큰 = crypto.randomUUID();
+                        localStorage.setItem("세션토큰", 세션토큰);
+
+                        // ✅ 세션토큰 서버에 기록
+                        db.ref("users/" + uid).update({ 세션토큰 });
+                    })
                     .catch(err => {
                         alert("로그인 실패: " + err.message);
                     });
@@ -1072,32 +1081,32 @@
         auth.onAuthStateChanged(function (user) {
             if (user) {
                 if (user.isAnonymous) {
-                    user.delete().then(() => {
-                        로그인화면보여주기();
-                    });
+                    user.delete().then(() => 로그인화면보여주기());
                     return;
                 }
 
                 uid = user.uid;
-
                 const 세션토큰 = crypto.randomUUID();
                 localStorage.setItem("세션토큰", 세션토큰);
 
-                // ✅ 세션토큰 저장이 끝난 후 감시 시작
+                // ✅ 세션토큰 저장 후 정확히 감시 시작
                 db.ref("users/" + uid).update({ 세션토큰 }).then(() => {
-                    setInterval(() => {
-                        const 내토큰 = localStorage.getItem("세션토큰");
-                        db.ref("users/" + uid + "/세션토큰").once("value").then(snapshot => {
-                            const 서버토큰 = snapshot.val();
-                            if (!내토큰 || 내토큰 !== 서버토큰) {
-                                alert("다른 브라우저에서 로그인되었습니다. 이 브라우저는 로그아웃됩니다.");
-                                auth.signOut().then(() => {
-                                    localStorage.removeItem("세션토큰");
-                                    location.reload();
-                                });
-                            }
-                        });
-                    }, 3000);
+                    // 감시 루프는 2초 후 시작 (충분히 안정된 상태)
+                    setTimeout(() => {
+                        setInterval(() => {
+                            const 내토큰 = localStorage.getItem("세션토큰");
+                            db.ref("users/" + uid + "/세션토큰").once("value").then(snapshot => {
+                                const 서버토큰 = snapshot.val();
+                                if (!내토큰 || 내토큰 !== 서버토큰) {
+                                    alert("다른 브라우저에서 로그인되었습니다. 이 브라우저는 로그아웃됩니다.");
+                                    auth.signOut().then(() => {
+                                        localStorage.removeItem("세션토큰");
+                                        location.reload();
+                                    });
+                                }
+                            });
+                        }, 3000);
+                    }, 2000); // ✅ 딜레이 줘서 안전하게 시작
                 });
 
 
