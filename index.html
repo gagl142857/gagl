@@ -741,7 +741,7 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.2";
+        document.getElementById("버전표시").innerText = "v1.1.3";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -2704,11 +2704,15 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
         });
 
         document.addEventListener("click", (e) => {
-            // 자동사냥 중일 때만 멈춤
-            if (자동사냥중 && !e.target.closest("#자동사냥버튼")) {
+            if (
+                자동사냥중 &&
+                !e.target.closest("#자동사냥버튼") &&
+                !e.target.closest("#채팅입력")
+            ) {
                 자동사냥중지();
             }
         });
+
 
 
         function 숙련도소모계산(투자순번) {
@@ -2758,6 +2762,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 지금까지 투자된 모든 숙련도가 회수됩니다<br>
 4. 아이디를 클릭하시면 아이디 변경이 가능합니다<br>
 엔터치시면 됩니다<br>
+☆죄송합니다 닉넴변경 잠시 막아뒀습니다☆
 5. 층 옆의 화살표로 층 이동이 가능합니다<br>
 6. 도박이나 드랍으로 획득한 장비의 공격력은<br>
 전부 누적되어 공격력에 합산됩니다<br>
@@ -2770,13 +2775,14 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 10. 모든 팝업창은 바깥 클릭시 해제됩니다<br>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
-패치노트<br>
+v1.1.3 패치노트<br>
 1. 버닝 스킬이 추가되었습니다<br>
 2. 전당화면에 레벨표시가 추가되었습니다<br>
 3. 채팅기능이 추가되었습니다. 수다를 떨어주세요<br>
 4. 로그인 시스템이 변경되었습니다<br>
 기기간 호환이 가능해졌습니다<br>
 5. 자동로그아웃 버그가 해결되었습니다<br>
+6. 채팅창 입력시에도 자동사냥이 멈추지 않습니다<br>
     </div>
 `;
         // 버전업
