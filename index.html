@@ -760,24 +760,20 @@
         document.getElementById("버전표시").innerText = "v1.1.7";
 
         function 채팅보내기() {
-            const 입력창 = document.getElementById("채팅입력");
-            const 내용 = 입력창.value.trim();
-            if (!내용) return;
+            const 입력 = document.getElementById("채팅입력");
+            const 텍스트 = 입력.value.trim();
+            if (!텍스트) return;
 
-            const 채팅 = {
-                아이디: 유저데이터.아이디,
-                내용: 내용,
+            const 메시지 = {
+                아이디: 유저데이터.아이디 || "익명",
+                내용: 텍스트,
                 시각: Date.now()
             };
 
-            db.ref("채팅").push(채팅).then(() => {
-                채팅로그정리(); // ✅ 추가
-            });
-
-            입력창.value = "";
+            db.ref("채팅").push(메시지);
+            입력.value = "";
         }
 
-        // 전역변수
         let uid = "";
         let 유저데이터 = {};
         let 현재악마 = null;
@@ -789,65 +785,6 @@
 
         let 현재몬스터이름 = "";
         let 현재몬스터등급 = "일반";
-        let 채팅리스너 = null;
-        let 마지막세션체크 = 0;
-
-        document.addEventListener("click", () => {
-            // ✅ 로그인화면이면 무시
-            if (document.getElementById("전투화면").style.display === "none") return;
-
-            const 지금 = Date.now();
-            if (지금 - 마지막세션체크 < 30000) return;
-            마지막세션체크 = 지금;
-
-            const 내토큰 = localStorage.getItem("세션토큰");
-            db.ref("users/" + uid + "/세션토큰").once("value").then(snapshot => {
-                const 서버토큰 = snapshot.val();
-                if (!내토큰 || 내토큰 !== 서버토큰) {
-                    alert("다른 브라우저에서 로그인되었습니다. 이 브라우저는 로그아웃됩니다.");
-                    auth.signOut().then(() => {
-                        localStorage.removeItem("세션토큰");
-                        location.reload();
-                    });
-                }
-            });
-        });
-
-        function 드랍로그정리() {
-            db.ref("드랍로그").orderByKey().limitToFirst(1).once("value", snapshot => {
-                snapshot.forEach(child => {
-                    db.ref("드랍로그/" + child.key).remove();
-                });
-            });
-        }
-
-        function 채팅로그정리() {
-            db.ref("채팅").orderByKey().limitToFirst(1).once("value", snapshot => {
-                snapshot.forEach(child => {
-                    db.ref("채팅/" + child.key).remove();
-                });
-            });
-        }
-
-        function 실시간채팅연결() {
-            if (채팅리스너) return;
-
-            채팅리스너 = db.ref("채팅").limitToLast(1).on("child_added", (snapshot) => {
-                const c = snapshot.val();
-                if (이미표시한시각.has(c.시각)) return;
-                이미표시한시각.add(c.시각);
-                채팅로그목록.push(c);
-                로그업데이트();
-            });
-        }
-
-        function 실시간채팅해제() {
-            if (채팅리스너) {
-                db.ref("채팅").off("child_added", 채팅리스너);
-                채팅리스너 = null;
-            }
-        }
-
 
         const 레어몬스터 = [
             "IV. 디아블로",
@@ -1171,6 +1108,22 @@
                 localStorage.setItem("세션토큰", 세션토큰);
                 db.ref("users/" + uid).update({ 세션토큰 }).then(() => {
 
+                    // 감시 루프는 2초 후 시작 (충분히 안정된 상태)
+                    setTimeout(() => {
+                        setInterval(() => {
+                            const 내토큰 = localStorage.getItem("세션토큰");
+                            db.ref("users/" + uid + "/세션토큰").once("value").then(snapshot => {
+                                const 서버토큰 = snapshot.val();
+                                if (!내토큰 || 내토큰 !== 서버토큰) {
+                                    alert("다른 브라우저에서 로그인되었습니다. 이 브라우저는 로그아웃됩니다.");
+                                    auth.signOut().then(() => {
+                                        localStorage.removeItem("세션토큰");
+                                        location.reload();
+                                    });
+                                }
+                            });
+                        }, 3000);
+                    }, 2000); // ✅ 딜레이 줘서 안전하게 시작
                 });
 
 
@@ -1292,25 +1245,6 @@
             document.getElementById("레벨업표시").innerText = "";
         }
 
-        document.getElementById("채팅입력").addEventListener("focus", () => {
-            document.getElementById("채팅로그박스").style.display = "block";
-            실시간채팅연결();
-        });
-
-        document.addEventListener("click", (e) => {
-            const 채팅창 = document.getElementById("채팅로그박스");
-            const 입력창 = document.getElementById("채팅입력");
-
-            if (
-                !채팅창.contains(e.target) &&
-                e.target !== 입력창
-            ) {
-                채팅창.style.display = "none";
-                입력창.blur(); // 포커스 해제
-                실시간채팅해제();
-            }
-        });
-
 
         function 전투화면보여주기(유저) {
             document.getElementById("로그인화면").style.display = "none";
@@ -1321,8 +1255,7 @@
             document.getElementById("에너지박스").style.display = "block";
             document.getElementById("전투화면").style.display = "block";
             document.getElementById("드랍로그박스").style.display = "block";
-            document.getElementById("채팅입력").style.display = "none";
-            document.getElementById("채팅로그박스").style.display = "none";
+            document.getElementById("채팅입력").style.display = "block";
 
             document.getElementById("유저아이디").innerText = 유저데이터.아이디 || "gagl";
             document.getElementById("타이틀을아이디로").innerText = 유저데이터.아이디 || "gagl";
@@ -1486,95 +1419,103 @@
             const 컨테이너 = document.getElementById("전당컨테이너");
             컨테이너.innerHTML = "";
 
-            firebase.firestore().collection("전당")
-                .orderBy("공격력", "desc")
-                .limit(10)
-                .get()
-                .then((querySnapshot) => {
-                    const 유저리스트 = [];
-                    let 내정보포함 = false;
+            db.ref("users").once("value").then((snapshot) => {
+                const 유저리스트 = [];
 
-                    querySnapshot.forEach((doc, index) => {
-                        const 유저 = doc.data();
-                        유저.uid = doc.id;
-                        유저리스트.push(유저);
+                snapshot.forEach((child) => {
+                    const 데이터 = child.val();
 
-                        const 줄 = document.createElement("div");
-                        줄.className = "양쪽정렬 밑줄";
-                        if (유저.아이디 === 유저데이터.아이디) {
-                            줄.classList.add("내아이디강조");
-                            내정보포함 = true;
-                        }
+                    // 🔒 생성시각 필터
+                    const 생성시각 = new Date(데이터.생성시각).getTime();
+                    if (!isNaN(생성시각) && 생성시각 < 기준시각) return;
 
-                        let 왕관색클래스 = "";
-                        if (index === 0) 왕관색클래스 = "금";
-                        else if (index === 1) 왕관색클래스 = "은";
-                        else if (index === 2) 왕관색클래스 = "동";
+                    if (!데이터.아이디 || 데이터.아이디.trim() === "") return;
+                    유저리스트.push(데이터);
+                });
 
-                        const 왕관 = index < 3
-                            ? `<svg xmlns="http://www.w3.org/2000/svg" class="crown-icon ${왕관색클래스}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-               <path d="M2 5l4.5 4.5L12 3l5.5 6.5L22 5l-1 14H3L2 5z" />
-               <path d="M5 20h14" />
-             </svg>`
-                            : `<span>${index + 1}</span>`;
+                // ✅ 공격력 기준 정렬
+                유저리스트.sort((a, b) => b.공격력 - a.공격력);
 
-                        줄.innerHTML = `
-          <div class="가로정렬">${왕관}</div>
-          <div>${유저.아이디} (lv.${유저.레벨 || 1}) - 공격력 ${유저.공격력} / ${유저.현재층}층</div>
-        `;
-                        컨테이너.appendChild(줄);
+                유저리스트.slice(0, 10).forEach((유저, index) => {
+                    const 줄 = document.createElement("div");
+                    줄.className = "양쪽정렬 밑줄";
+                    if (유저.아이디 === 유저데이터.아이디) {
+                        줄.classList.add("내아이디강조");
+                    }
 
-                        줄.addEventListener("click", () => {
-                            화면잠금();
-                            const 장비들 = 유저.장비목록 || [];
+                    let 왕관색클래스 = "";
+                    if (index === 0) 왕관색클래스 = "금";
+                    else if (index === 1) 왕관색클래스 = "은";
+                    else if (index === 2) 왕관색클래스 = "동";
 
-                            const 창 = document.getElementById("미니장비창");
-                            창.style.display = "block";
-                            창.innerHTML = `<div style="font-weight:bold; margin-bottom:8px;">🔍 ${유저.아이디} 장비</div>`;
+                    const 왕관 = index < 3
+                        ? `<svg xmlns="http://www.w3.org/2000/svg" class="crown-icon ${왕관색클래스}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                     <path d="M2 5l4.5 4.5L12 3l5.5 6.5L22 5l-1 14H3L2 5z" />
+                     <path d="M5 20h14" />
+                   </svg>`
+                        : `<span>${index + 1}</span>`;
 
-                            if (장비들.length === 0) {
-                                창.innerHTML += "장비 없음";
+                    줄.innerHTML = `
+  <div class="가로정렬">${왕관}</div>
+  <div>${유저.아이디} (lv.${유저.레벨 || 1}) - 공격력 ${유저.공격력} / ${유저.현재층}층</div>
+`;
+                    컨테이너.appendChild(줄);
+
+                    줄.addEventListener("click", () => {
+                        화면잠금();
+                        db.ref("users").orderByChild("아이디").equalTo(유저.아이디).once("value").then(snapshot => {
+                            snapshot.forEach(child => {
+                                const 대상데이터 = child.val();
+                                const 장비들 = 대상데이터.장비목록 || [];
+
+                                const 창 = document.getElementById("미니장비창");
+                                창.style.display = "block";
+                                창.innerHTML = `<div style="font-weight:bold; margin-bottom:8px;">🔍 ${유저.아이디} 장비</div>`;
+
+                                if (장비들.length === 0) {
+                                    창.innerHTML += "장비 없음";
+                                    화면해제();
+                                    return;
+                                }
+
+                                장비들.sort((a, b) => b.공격력 - a.공격력);
+
+                                for (const 장비 of 장비들) {
+                                    const 키 = `${장비.이름}|${장비.등급}`;
+                                    const 합성수 = 대상데이터.합성기록?.[키] ?? 0;
+                                    const 강화표시 = 장비.강화 ? ` +${장비.강화}` : "";
+                                    const 이름표시 = `${장비.이름}(${합성수})${강화표시}`;
+
+                                    const 박스 = document.createElement("div");
+                                    박스.className = "기본테두리";
+                                    박스.style.marginBottom = "6px";
+                                    박스.style.border = `1px solid ${색상맵[장비.등급] || "#ccc"}`;
+                                    박스.innerText = `[${장비.등급}] ${이름표시} - 🗡 ${장비.공격력}`;
+                                    창.appendChild(박스);
+                                }
+
                                 화면해제();
-                                return;
-                            }
-
-                            장비들.sort((a, b) => b.공격력 - a.공격력);
-                            for (const 장비 of 장비들) {
-                                const 키 = `${장비.이름}|${장비.등급}`;
-                                const 합성수 = 유저.합성기록?.[키] ?? 0;
-                                const 강화표시 = 장비.강화 ? ` +${장비.강화}` : "";
-                                const 이름표시 = `${장비.이름}(${합성수})${강화표시}`;
-
-                                const 박스 = document.createElement("div");
-                                박스.className = "기본테두리";
-                                박스.style.marginBottom = "6px";
-                                박스.style.border = `1px solid ${색상맵[장비.등급] || "#ccc"}`;
-                                박스.innerText = `[${장비.등급}] ${이름표시} - 🗡 ${장비.공격력}`;
-                                창.appendChild(박스);
-                            }
-
-                            화면해제();
+                            });
                         });
                     });
 
-                    // ✅ 자기 자신이 Top10에 없다면 따로 표시
-                    if (!내정보포함) {
-                        firebase.firestore().collection("전당").doc(uid).get().then((doc) => {
-                            if (doc.exists) {
-                                const 나 = doc.data();
-                                const 내줄 = document.createElement("div");
-                                내줄.className = "양쪽정렬 사백픽셀테두리 내아이디강조";
-                                내줄.innerHTML = `
-              <div class="가로정렬">내정보</div>
-              <div>${나.아이디} (lv.${나.레벨 || 1}) - 공격력 ${나.공격력} / ${나.현재층}층</div>
-            `;
-                                컨테이너.appendChild(내줄);
-                            }
-                        });
-                    }
                 });
-        }
 
+                const 내랭킹인덱스 = 유저리스트.findIndex(u => u.아이디 === 유저데이터.아이디);
+                const 내랭킹 = 내랭킹인덱스 + 1;
+
+                if (내랭킹 > 10) {
+                    const 내줄 = document.createElement("div");
+                    내줄.className = "양쪽정렬 사백픽셀테두리 내아이디강조";
+
+                    내줄.innerHTML = `
+  <div class="가로정렬">${내랭킹}</div>
+  <div>${유저데이터.아이디} - 공격력 ${유저데이터.공격력} / ${유저데이터.현재층}층</div>
+`;
+                    컨테이너.appendChild(내줄);
+                }
+            });
+        }
 
         document.addEventListener("click", (e) => {
             const 창 = document.getElementById("미니장비창");
@@ -1694,10 +1635,7 @@
                 시각: Date.now()
             };
 
-            db.ref("드랍로그").push(로그객체).then(() => {
-                드랍로그정리(); // ✅ 추가
-                화면해제();
-            });
+            db.ref("드랍로그").push(로그객체);
         }
 
 
@@ -2365,14 +2303,30 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 유저데이터.현재악마번호 = Math.floor(Math.random() * 72) + 1;
                 // 유저데이터.현재층은 그대로
                 delete 유저데이터.강림몬스터;
-                db.ref("users/" + uid).set(유저데이터).then(() => {
+                db.ref("users/" + uid).update({
+                    경험치: 유저데이터.경험치,
+                    골드: 유저데이터.골드,
+                    숙련도: 유저데이터.숙련도,
+                    남은체력: 유저데이터.남은체력,
+                    현재층: 유저데이터.현재층,
+                    현재악마번호: 유저데이터.현재악마번호,
+                    레벨: 유저데이터.레벨,
+                    공격력: 유저데이터.공격력,
+                    최대체력: 유저데이터.최대체력
+                }).then(() => {
                     전투화면보여주기();
-                    document.getElementById("승리패배로그").innerText = "패배";
-                    document.getElementById("승리패배로그").style.color = "red";
-                    document.getElementById("획득로그").style.color = "red";
-                    document.getElementById("레벨업표시").innerText = "";
-                    document.getElementById("획득로그").innerText = "";
-                    // 죽음메시지보여주기("💀 체력이 모두 소진되어 후퇴합니다!");
+
+                    document.getElementById("승리패배로그").innerText = "승리";
+                    document.getElementById("승리패배로그").style.color = "#00c851";
+                    document.getElementById("획득로그").style.color = "#00c851";
+                    document.getElementById("획득로그").innerText =
+                        `${보상.경험치} EXP, ${보상.골드} Gold, ${보상.숙련도} 숙련도 획득`;
+                    document.getElementById("획득경험치").innerText = `+${보상.경험치}`;
+                    document.getElementById("획득골드").innerText = `+${보상.골드}`;
+                    document.getElementById("획득숙련도").innerText = `+${보상.숙련도}`;
+                    document.getElementById("레벨업표시").innerText =
+                        (새레벨 > 이전레벨) ? "레벨업!" : "";
+
                     화면해제();
                 });
 
@@ -2482,19 +2436,10 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
                 delete 유저데이터.강림몬스터;
 
-                db.ref("users/" + uid).update({
-                    경험치: 유저데이터.경험치,
-                    골드: 유저데이터.골드,
-                    숙련도: 유저데이터.숙련도,
-                    남은체력: 유저데이터.남은체력,
-                    현재층: 유저데이터.현재층,
-                    현재악마번호: 유저데이터.현재악마번호,
-                    레벨: 유저데이터.레벨,
-                    공격력: 유저데이터.공격력,
-                    최대체력: 유저데이터.최대체력
-                }).then(() => {
+                db.ref("users/" + uid).set(유저데이터).then(() => {
                     전투화면보여주기();
 
+                    // ✅ 승리 UI 출력
                     document.getElementById("승리패배로그").innerText = "승리";
                     document.getElementById("승리패배로그").style.color = "#00c851";
                     document.getElementById("획득로그").style.color = "#00c851";
@@ -2506,6 +2451,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                     document.getElementById("레벨업표시").innerText =
                         (새레벨 > 이전레벨) ? "레벨업!" : "";
 
+                    // 죽음메시지보여주기(`${전투중몬스터이름} 처치!`);
                     화면해제();
                 });
             }
@@ -2639,6 +2585,15 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                     채팅로그목록.push(c);
                 });
 
+                로그업데이트();
+            });
+
+            // 🔹 실시간 채팅
+            db.ref("채팅").limitToLast(1).on("child_added", (snapshot) => {
+                const c = snapshot.val();
+                if (이미표시한시각.has(c.시각)) return;
+                이미표시한시각.add(c.시각);
+                채팅로그목록.push(c);
                 로그업데이트();
             });
 
@@ -2866,11 +2821,10 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 10. 모든 팝업창은 바깥 클릭시 해제됩니다<br>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
-v1.1.8 패치노트<br>
-서버 최적화작업이 진행되었습니다<br>
-게임을 하루 이상 할 수 있습니다<br>
-
-</div>
+v1.1.4 패치노트<br>
+1. 아이디를 클릭하시면 아이디 변경이 가능합니다<br>
+로그인 아이디도 변경이니 로그인 시 참고하세요<br>
+    </div>
 `;
         // 버전업
 
@@ -2984,11 +2938,7 @@ v1.1.8 패치노트<br>
                     로그: `[${유저데이터.아이디}] ${등급} 장비 도박 실패..`,
                     시각: Date.now(),
                 };
-                화면잠금();
-                db.ref("드랍로그").push(로그).then(() => {
-                    드랍로그정리(); // ✅ 추가
-                    화면해제();
-                });
+                db.ref("드랍로그").push(로그);
             }
             화면잠금();
             db.ref("users/" + uid).update({ 골드: 유저데이터.골드 }).then(() => {
