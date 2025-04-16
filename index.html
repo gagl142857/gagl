@@ -757,7 +757,7 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.8";
+        document.getElementById("버전표시").innerText = "v1.1.9";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -1759,7 +1759,7 @@
                 },
                 인사이트: {
                     단계: ["마이크로 인사이트", "나노 인사이트"],
-                    설명: ["숙련도 + 1", "숙련도 + 2"],
+                    설명: ["숙련도 + 108", "숙련도 + 216"],
                     색상: Array(10).fill("#00ff00"),
                     아이콘: (색) => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${색}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-diamond-plus-icon lucide-diamond-plus"><path d="M12 8v8"/><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41L13.7 2.71a2.41 2.41 0 0 0-3.41 0z"/><path d="M8 12h8"/></svg>`
                 },
@@ -1792,6 +1792,8 @@
             const 스킬목록 = [];
 
             for (const 키 in 스킬정보) {
+                // if (키 === "퀵니스") continue; 
+
                 const 설정 = 스킬정보[키];
                 const 전체레벨 = 유저데이터.스킬[키] || 0;
                 const 단계수 = 설정.단계.length;
@@ -2438,7 +2440,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 
                     const 확률 = 현재스킬레벨 >= 10 ? 1 : 현재스킬레벨 * 0.1;
                     if (Math.random() < 확률) {
-                        숙련도추가 += 인사이트스킬[i].추가;
+                        숙련도추가 += 인사이트스킬[i].추가 * 108;
                     } else {
                         break; // 이 단계에서 실패하면 이후 스킬은 건너뜀
                     }
@@ -2880,7 +2882,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 10. 모든 팝업창은 바깥 클릭시 해제됩니다<br>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
-v1.1.8 패치노트<br>
+v1.1.9 패치노트<br>
 1. 자동사냥시 무한로딩 해결<br>
 2. 자동공격 삭제, 공격하기 복원, 스태미너 도입<br>
 3. 스태미너 도입에 따라 모든 등장률과 드랍율이<br>
@@ -2888,7 +2890,7 @@ v1.1.8 패치노트<br>
 5. 스태미너 초기화는 아침9시입니다<br>
 4. 특정유저 드랍로그 누락 수정은했는데<br>
 적용되는진 모르겠습니다<br>
-
+5. 스태미너 도입에 따른 인사이트 스킬 상향<br>
 </div>
 `;
         // 버전업
