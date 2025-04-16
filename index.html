@@ -757,7 +757,7 @@
         const db = firebase.database();
         const 기준시각 = new Date("2025-04-15T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.1.9";
+        document.getElementById("버전표시").innerText = "v1.2.0";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -1276,7 +1276,7 @@
         }
 
 
-        function 전투화면보여주기(유저) {
+        function 전투화면보여주기(유저, 강제일반 = false) {
             document.getElementById("로그인화면").style.display = "none";
             document.getElementById("전당화면").style.display = "none";
             document.getElementById("스킬화면").style.display = "none";
@@ -1349,23 +1349,19 @@
                 등급 = 유저데이터.강림몬스터.등급;
                 특수몬스터이름 = 유저데이터.강림몬스터.이름;
             } else {
-                const r = Math.random();
-
-                if (r < 등장률.공허) {
-                    특수몬스터이름 = 공허몬스터[Math.floor(Math.random() * 공허몬스터.length)];
-                    등급 = "공허";
-                } else if (r < 등장률.공허 + 등장률.태초) {
-                    특수몬스터이름 = 태초몬스터[Math.floor(Math.random() * 태초몬스터.length)];
-                    등급 = "태초";
-                } else if (r < 등장률.공허 + 등장률.태초 + 등장률.고대) {
-                    특수몬스터이름 = 고대몬스터[Math.floor(Math.random() * 고대몬스터.length)];
-                    등급 = "고대";
-                } else if (r < 등장률.공허 + 등장률.태초 + 등장률.고대 + 등장률.신화) {
-                    특수몬스터이름 = 신화몬스터[Math.floor(Math.random() * 신화몬스터.length)];
-                    등급 = "신화";
-                } else if (r < 등장률.공허 + 등장률.태초 + 등장률.고대 + 등장률.신화 + 등장률.레어) {
-                    특수몬스터이름 = 레어몬스터[Math.floor(Math.random() * 레어몬스터.length)];
-                    등급 = "레어";
+                if (!강제일반 && !유저.강림몬스터) {
+                    const r = Math.random();
+                    if (r < 등장률.공허) {
+                        유저.강림몬스터 = "공허";
+                    } else if (r < 등장률.태초) {
+                        유저.강림몬스터 = "태초";
+                    } else if (r < 등장률.고대) {
+                        유저.강림몬스터 = "고대";
+                    } else if (r < 등장률.신화) {
+                        유저.강림몬스터 = "신화";
+                    } else if (r < 등장률.레어) {
+                        유저.강림몬스터 = "레어";
+                    }
                 }
             }
 
@@ -2513,7 +2509,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
                 유저데이터.현재층 -= 1;
                 유저데이터.현재악마번호 = Math.floor(Math.random() * 72) + 1;
                 유저데이터.강림몬스터 = null; // ✅ 강림 상태 초기화
-                전투화면보여주기(유저데이터);
+                전투화면보여주기(유저데이터, true);
             }
         });
 
@@ -2551,7 +2547,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
             유저데이터.현재층 += 1;
             유저데이터.현재악마번호 = Math.floor(Math.random() * 72) + 1;
             유저데이터.강림몬스터 = null; // ✅ 강림 상태 초기화
-            전투화면보여주기(유저데이터);
+            전투화면보여주기(유저데이터, true);
         });
 
 
@@ -2882,15 +2878,8 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 10. 모든 팝업창은 바깥 클릭시 해제됩니다<br>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
-v1.1.9 패치노트<br>
-1. 자동사냥시 무한로딩 해결<br>
-2. 자동공격 삭제, 공격하기 복원, 스태미너 도입<br>
-3. 스태미너 도입에 따라 모든 등장률과 드랍율이<br>
-정확히 108배 상향됩니다<br>
-5. 스태미너 초기화는 아침9시입니다<br>
-4. 특정유저 드랍로그 누락 수정은했는데<br>
-적용되는진 모르겠습니다<br>
-5. 스태미너 도입에 따른 인사이트 스킬 상향<br>
+v1.2.0 패치노트<br>
+층 노가다 막았습니다<br>
 </div>
 `;
         // 버전업
