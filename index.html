@@ -707,7 +707,7 @@
         const db = firebase.database();
         const 메테오시간 = new Date("2025-04-17T12:25:00+09:00").getTime();
         // 버전업
-        document.getElementById("버전표시").innerText = "v1.2.1 도파민 폭발";
+        document.getElementById("버전표시").innerText = "v1.2.2 도파민 폭발";
 
         function 채팅보내기() {
             const 입력 = document.getElementById("채팅입력");
@@ -1349,7 +1349,7 @@
                     const 데이터 = child.val();
 
                     const 생성시각 = new Date(데이터.생성시각).getTime();
-                    if (!isNaN(생성시각) && 생성시각 < 메테오시간) return;
+                    if (!생성시각 || isNaN(생성시각) || 생성시각 < 메테오시간) return;
 
                     if (!데이터.아이디 || 데이터.아이디.trim() === "") return;
                     유저리스트.push(데이터);
@@ -2572,7 +2572,7 @@ ${설명} <span style="color: #3b82f6;">발동확률(${발동확률}%)</span>
 10. 모든 팝업창은 바깥 클릭시 해제됩니다<br>
 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ<br>
-v1.2.1 도파민폭발버전 패치노트<br>
+v1.2.2 도파민폭발버전 패치노트<br>
 도파민 폭발 버전입니다<br>
 </div>
 `;
